@@ -41,9 +41,32 @@ class Canvas:
     def __init__(self):
         rows, cols = 240, 240
         self.canvas = [["" for _ in range(cols)] for _ in range(rows)] # 2D Matrix of pixels 
+        self.color_index = 0
+    
+    def change_color(self):
+        self.color_index = self.color_index + 1
 
-    def draw(self, x, y, color):
-        self.canvas[int(y)][int(x)] = color
+        if self.color_index >= 5: 
+            self.color_index = 0
+
+    def get_color(self):
+        match self.color_index:
+            case 0:
+                return "white"
+            case 1:
+                return "blue"
+            case 2: 
+                return "red"
+            case 3: 
+                return "green"
+            case 4:
+                return "yellow"
+            case _: 
+                return "white"
+
+
+    def draw(self, x, y):
+        self.canvas[int(y)][int(x)] = self.get_color()
     
     def erase(self, x, y):
         self.canvas[int(y)][int(x)] = ""
@@ -52,7 +75,7 @@ class Canvas:
         for row in range(len(self.canvas)):
             for col in range(len(self.canvas[row])):
                 color = self.canvas[row][col]
-                pixel= (col, row, 2, 2)
+                pixel= (col, row, 1, 1)
                 if color == "":
                     pygame.draw.rect(screen, BACKGROUND, pixel) 
                 else:
@@ -65,7 +88,14 @@ def main(screen):
     player.move((hardware.control.joystick.x/100.0) * player.velocity,
                 (hardware.control.joystick.y/100.0) * player.velocity)
 
+    if hardware.control.joystick.clicked: 
+        canvas.change_color()
+
+    if hardware.control.button_a:
+        canvas.erase(player.x, player.y)
+    else:
+        canvas.draw(player.x, player.y)
+
     screen.fill(BACKGROUND)
-    canvas.draw(player.x, player.y, "white")
     canvas.display(screen)
     player.draw(screen)

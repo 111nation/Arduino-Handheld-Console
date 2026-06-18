@@ -3,11 +3,17 @@ import time
 import hardware
 import game
 
+SCREEN_WIDTH = 240
+SCREEN_HEIGHT = 240
+
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((240, 240))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Game")
 clock = pygame.time.Clock()
 running = True
+
+game.init()
 
 while running:
     hardware.read_serial_input()

@@ -1,7 +1,9 @@
 import pygame
-import hardware
+from hardware import control
 
 BACKGROUND = "black"
+STROKE_WIDTH = 2
+ERASER_SIZE = 25
 
 class Player:
     def __init__(self):
@@ -17,18 +19,18 @@ class Player:
 
     def move(self, vel_x, vel_y):
         # Velocity based movement
-        self.x = self.x + vel_x
-        self.y = self.y + vel_y
+        self.x = int(self.x + vel_x)
+        self.y = int(self.y + vel_y)
 
         if self.x < 0:
             self.x = 0
         elif self.x >= 240:
-            self.x = 239
+            self.x = 240-1
 
         if self.y < 0:
             self.y = 0
         elif self.y >= 240:
-            self.y = 239
+            self.y = 240-1
 
     def draw(self, screen):
         # Draw cross hair
@@ -39,8 +41,8 @@ class Player:
 
 class Canvas:
     def __init__(self):
-        rows, cols = 240, 240
-        self.canvas = [["" for _ in range(cols)] for _ in range(rows)] # 2D Matrix of pixels 
+        self.canvas = pygame.Surface((240, 240))
+        self.canvas.fill(BACKGROUND)
         self.color_index = 0
     
     def change_color(self):
@@ -64,37 +66,57 @@ class Canvas:
             case _: 
                 return "white"
 
-
     def draw(self, x, y):
-        self.canvas[int(y)][int(x)] = self.get_color()
+        pygame.draw.circle(self.canvas, self.get_color(), (x,y), STROKE_WIDTH)
     
     def erase(self, x, y):
-        self.canvas[int(y)][int(x)] = ""
+        pygame.draw.circle(self.canvas, BACKGROUND, (x,y), ERASER_SIZE)
 
     def display(self, screen):
-        for row in range(len(self.canvas)):
-            for col in range(len(self.canvas[row])):
-                color = self.canvas[row][col]
-                pixel= (col, row, 1, 1)
-                if color == "":
-                    pygame.draw.rect(screen, BACKGROUND, pixel) 
-                else:
-                    pygame.draw.rect(screen, color, pixel) 
+        screen.blit(self.canvas, (0, 0))
+
+# PREVENT CONTINUOUS PRESS
+enable_color_switch = True
+enable_mode_switch = True
+
+# MODES
+erase = False
 
 player = Player()
 canvas = Canvas()
 
+def init():
+    pygame.display.set_caption("Draw Game")
+
 def main(screen):
-    player.move((hardware.control.joystick.x/100.0) * player.velocity,
-                (hardware.control.joystick.y/100.0) * player.velocity)
+    global enable_color_switch, enable_mode_switch, erase
 
-    if hardware.control.joystick.clicked: 
+    player.move((control.joystick.x/100.0) * player.velocity,
+                (control.joystick.y/100.0) * player.velocity)
+
+    # UPDATE COLOR MODE
+
+    if control.joystick.clicked and enable_color_switch: 
         canvas.change_color()
+        enable_color_switch = False
+    elif not control.joystick.clicked:
+        enable_color_switch = True
 
-    if hardware.control.button_a:
+    # UPDATE DRAW MODE 
+
+    if control.button_a and enable_mode_switch:
+        erase = not erase
+        enable_mode_switch = False
+
+    if erase:
         canvas.erase(player.x, player.y)
     else:
         canvas.draw(player.x, player.y)
+
+    if not control.button_a:
+        enable_mode_switch = True
+
+    # DISPLAY SCREEN
 
     screen.fill(BACKGROUND)
     canvas.display(screen)

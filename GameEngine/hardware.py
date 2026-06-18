@@ -1,10 +1,12 @@
+from pygame import joystick
 import serial
+
+CONTROL_DATA_LENGTH = 18
 
 ser = serial.Serial('/dev/ttyACM0')
 ser.baudrate = 9600
 ser.timeout = 0.1
 ser.write_timeout = 0.1
-
 
 class Joystick:
     def __init__(self, x, y, clicked):
@@ -12,13 +14,16 @@ class Joystick:
         self.y = y
         self.clicked = clicked
 
+class Control:
+    def __init__(self, joystick, button_a) -> None:
+        self.joystick = joystick
+        self.button_a = button_a
 
-joystick = Joystick(0, 0, False)
+control = Control(Joystick(0, 0, False), False)
 
 
 def binary_to_int(binary):
     # Convert a signed byte (8 bits) to a integer
-
     if binary[0] == "0":
         return int(binary[1:8], 2)
     else:
@@ -42,26 +47,35 @@ def read_serial_input():
     data = ser.readline().rstrip().decode("ascii")
 
     # Ignore data thats too short
-    if len(data) < 17:
-        joystick.x = 0
-        joystick.y = 0
-        joystick.clicked = False
+    if len(data) < CONTROL_DATA_LENGTH:
+        control.joystick.x = 0
+        control.joystick.y = 0
+        control.joystick.clicked = False
+        control.button_a = False
         return
 
-    joystick.x = binary_to_int(data[0:8])
-    joystick.y = binary_to_int(data[8:16])
-    joystick.clicked = True if data[16] == "1" else False
+    control.joystick.x = binary_to_int(data[0:8])
+    control.joystick.y = binary_to_int(data[8:16])
+    control.joystick.clicked = True if data[16] == '1' else False
+    control.button_a = True if data[17] == '1' else False
+
+
+def debug_control_actions():
+    debug_joystick_actions()
+
+    if control.button_a:
+        print("Button A Pressed")
 
 
 def debug_joystick_actions():
-    if joystick.x == 0 and joystick.y == 0 and not joystick.clicked:
-        return
+    joystick = control.joystick
 
-    print("X:", end="")
-    print(joystick.x)
+    if joystick.x != 0 or joystick.y != 0:
+        print("X:", end="")
+        print(control.joystick.x)
 
-    print("Y:", end="")
-    print(joystick.y)
+        print("Y:", end="")
+        print(control.joystick.y)
 
-    if joystick.clicked:
-        print("Button pressed")
+    if control.joystick.clicked:
+        print("Joystick Pressed")

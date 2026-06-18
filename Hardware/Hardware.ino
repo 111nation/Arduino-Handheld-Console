@@ -1,22 +1,30 @@
 /* LED LIGHT PARAMETERS */
-#define RED_PIN 9
-#define GREEN_PIN 10
-#define BLUE_PIN 11
+constexpr int RED_PIN = 9;
+constexpr int GREEN_PIN = 10;
+constexpr int BLUE_PIN = 11;
 
 #define LED_DISCONNECTED 10, 0, 0
 #define LED_CONNECTED 0, 10, 0
 
 /* JOYSTICK  PARAMETERS*/
-#define JOYSTICK_X_PIN A0 
-#define JOYSTICK_Y_PIN A1
-#define JOYSTICK_BUTTON_PIN A2 
+constexpr int JOYSTICK_X_PIN = A0;
+constexpr int JOYSTICK_Y_PIN = A1;
+constexpr int JOYSTICK_BUTTON_PIN = A2;
+
+/* BUTTON PARAMETERS */
+constexpr int BUTTON_A_PIN = 8;
 
 /* GENERAL PARAMETERS */
-#define DISCONNECTED_TIMEOUT 1000
+constexpr int DISCONNECTED_TIMEOUT = 1000;
 
 struct Joystick {
   byte x, y;
   bool clicked;
+};
+
+struct Control {
+  Joystick joystick;
+  bool buttonAClicked;
 };
 
 bool receiverReady = false;
@@ -26,6 +34,7 @@ void setup() {
   pinMode(GREEN_PIN, OUTPUT);
   pinMode(BLUE_PIN, OUTPUT);
   pinMode(JOYSTICK_BUTTON_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_A_PIN, INPUT);
 
   Serial.begin(9600);
   Serial.setTimeout(1000);
@@ -33,15 +42,15 @@ void setup() {
   changeLED(LED_DISCONNECTED);
 }
 
-Joystick joystick;
+Control control;
 
 void loop() {
-  
+
   retrieveReceiverStatus();
 
   if (receiverReady) {
-    retrieveJoystickActions(joystick);
-    transmitSerialInformation(joystick);
+    retrieveControlActions(control);
+    transmitSerialInformation(control);
   } else {
   }
 }
@@ -62,28 +71,28 @@ void retrieveReceiverStatus() {
     return;
   }
 
-  waitTime = millis(); // Stop waiting for data
+  waitTime = millis();  // Stop waiting for data
 
-  char data[2]; // One byte and a null terminator
+  char data[2];  // One byte and a null terminator
   int bytesRead = Serial.readBytes(data, 1);
   data[bytesRead] = '\0';
 
   if (data[0] == '1') {
     receiverReady = true;
     changeLED(LED_CONNECTED);
-  } else { 
+  } else {
     receiverReady = false;
     changeLED(LED_DISCONNECTED);
   }
 }
 
-void transmitSerialInformation(Joystick& joystick) {
-  char binaryStr[18]; // 17 bits for integer bits + 1 for null terminator
+void transmitSerialInformation(Control& control) {
+  char binaryStr[19];  // 18 bits for integer bits + 1 for null terminator
 
   // Format of binary string
-  // Fixed 8 bits, fixed 8 bits, fixed 1 bit
+  // Fixed 8 bits, fixed 8 bits, fixed 1 bit, fixed 1 bit
   // Preserve leading zeros for fixed sizing
-  //[Joystick x, Joystick y, Button Clicked]
+  //[Joystick x, Joystick y, Joystick Clicked, ButtonA Clicked]
 
   // Copy over the joystick clicked information
 
@@ -94,7 +103,8 @@ void transmitSerialInformation(Joystick& joystick) {
     We do this for joystick x and joystick y because we need to do this for their 8 bits (byte)
     For joystick clicked, we need one bit to represent if a button was clicked or not
   */
- 
+  Joystick& joystick = control.joystick;
+
   // Copy over the joystick x
   for (int i = 0; i < 8; i++) {
     binaryStr[7 - i] = (joystick.x & (1 << i)) ? '1' : '0';
@@ -104,11 +114,17 @@ void transmitSerialInformation(Joystick& joystick) {
   for (int i = 0; i < 8; i++) {
     binaryStr[15 - i] = (joystick.y & (1 << i)) ? '1' : '0';
   }
-  
+
   binaryStr[16] = joystick.clicked ? '1' : '0';
-  binaryStr[17] = '\0';
+  binaryStr[17] = control.buttonAClicked ? '1' : '0';
+  binaryStr[18] = '\0';
 
   Serial.println(binaryStr);
+}
+
+void retrieveControlActions(Control& control) {
+  retrieveJoystickActions(control.joystick);
+  control.buttonAClicked = (digitalRead(BUTTON_A_PIN) == HIGH);
 }
 
 void retrieveJoystickActions(Joystick& joystick) {
@@ -129,7 +145,15 @@ void retrieveJoystickActions(Joystick& joystick) {
   }
 
   joystick.clicked = (digitalRead(JOYSTICK_BUTTON_PIN) == 0);
-} 
+}
+
+void debugControlActions(Control& control) {
+  debugJoystickActions(control.joystick);
+  
+  if (control.buttonAClicked) {
+    Serial.println("Button A Clicked");
+  }
+}
 
 void debugJoystickActions(Joystick& joystick) {
   // Print debug messages when joystick has been interacted with
@@ -142,19 +166,19 @@ void debugJoystickActions(Joystick& joystick) {
   Serial.println(joystick.y);
 
   if (joystick.clicked) {
-    Serial.println("Button pressed");
+    Serial.println("Joystick pressed");
   }
 }
 
 void changeLED(int red, int green, int blue) {
-  // Accept regular 0-255 rgb input and scale it to 0-1023 for 
+  // Accept regular 0-255 rgb input and scale it to 0-1023 for
   // analogWrite
 
   red = constrain(red, 0, 255);
   green = constrain(green, 0, 255);
   blue = constrain(blue, 0, 255);
 
-  analogWrite(RED_PIN, red/255.0 * 1023);
-  analogWrite(GREEN_PIN, green/255.0 * 1023);
-  analogWrite(BLUE_PIN, blue/255.0 * 1023);
+  analogWrite(RED_PIN, red / 255.0 * 1023);
+  analogWrite(GREEN_PIN, green / 255.0 * 1023);
+  analogWrite(BLUE_PIN, blue / 255.0 * 1023);
 }

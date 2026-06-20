@@ -1,7 +1,10 @@
+#include "GameEngine.hpp"
+
+
 /* LED LIGHT PARAMETERS */
-constexpr int RED_PIN = 9;
-constexpr int GREEN_PIN = 10;
-constexpr int BLUE_PIN = 11;
+constexpr int RED_PIN = 6;
+constexpr int GREEN_PIN = 9;
+constexpr int BLUE_PIN = 10;
 
 #define LED_DISCONNECTED 10, 0, 0
 #define LED_CONNECTED 0, 10, 0
@@ -12,7 +15,7 @@ constexpr int JOYSTICK_Y_PIN = A1;
 constexpr int JOYSTICK_BUTTON_PIN = A2;
 
 /* BUTTON PARAMETERS */
-constexpr int BUTTON_A_PIN = 8;
+constexpr int BUTTON_A_PIN = A3;
 
 /* GENERAL PARAMETERS */
 constexpr int DISCONNECTED_TIMEOUT = 1000;
@@ -40,11 +43,13 @@ void setup() {
   Serial.setTimeout(1000);
 
   changeLED(LED_DISCONNECTED);
+
 }
 
 Control control;
 
 void loop() {
+  /*
 
   retrieveReceiverStatus();
 
@@ -53,6 +58,9 @@ void loop() {
     transmitSerialInformation(control);
   } else {
   }
+  */
+
+
 }
 
 void retrieveReceiverStatus() {

@@ -12,6 +12,19 @@
 
 // SYNTAX CONSTANTS
 constexpr char INLINE_COMMENT = '#';
+constexpr char MEM_PREFIX = 'M';
+
+// OPERATORS
+constexpr char ADDITION = '+';
+constexpr char SUBTRACTION = '-';
+constexpr char MULTIPLICATION = '*';
+constexpr char DIVISION = '/';
+constexpr char GREATER = '>';
+constexpr char LESS = '<';
+constexpr char BANG = '!';
+constexpr char EQUAL = '=';
+constexpr char LEFT_BRACKET = '('; 
+constexpr char RIGHT_BRACKET = ')'; 
 
 // ========================
 // UNIVERSAL IMPLEMENTATION
@@ -20,14 +33,35 @@ constexpr char INLINE_COMMENT = '#';
 extern INTEGER* Heap;     // Heap memory
 
 // Helpers
-bool validAddress(ADDR address);
-STRING trimLeadingTrailingWhitespace(STRING value);
+INTEGER stringToInt(STRING line);
+INTEGER stringToInt(STRING line, STRING end);
+STRING trimLeft(STRING value);
+bool isWhiteSpace(const char& value);
+bool validAddress(INTEGER address); 
 
 // Basic I/O
 void write(ADDR address, INTEGER value);
 INTEGER read(ADDR address);
 
 // Parsing and Interpreting
+
+// Expression Parsing
+// Derived from: http://craftinginterpreters.com/parsing-expressions.html
+// Operators act in hierarcies
+// We use recursion to go down the heirarch until a number and then bubble going back up
+// evaluating operators
+
+// Operator function calls defined in heirarichal order
+// Pass pointer by reference to have a global 'current' character tracker
+INTEGER equality(STRING& line); 						
+INTEGER comparison(STRING& line);
+INTEGER term(STRING& line);
+INTEGER factor(STRING& line);
+INTEGER unary(STRING& line);
+INTEGER primary(STRING& line);
+
+
+INTEGER parseExpression(STRING& line);
 void parse(STRING line); 
 
 
@@ -46,7 +80,7 @@ void parse(STRING line);
 
 	using namespace std;
 
-	string readFile(string fileName);
+	void interpret(string fileName);
 
 	// Debug Functions
 	void initDebugHeap();

@@ -1,4 +1,8 @@
-If you see this message you succeeded
-
-
-YAY!
+# STORE IN MEM1
+M1 = 6 + 7
+# Multiply mem1 into mem2
+M2 = M1 * 10
+# Comparison
+M3 = M2 > M1
+# Store M3 into M0
+M0 = M3

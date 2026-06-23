@@ -1,14 +1,70 @@
 #include "GameEngine.hpp"
-#include <cstddef>
-#include <cstdint>
-#include <cstring>
-#include <filesystem>
-#include <string>
+#include <cmath>
 
 // UNIVERSAL IMPLEMENTATION
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 
+
+bool consume(STRING value, STRING& line) {
+	// Move pointer past IMMEDIATE matched word
+	// Used for searching keyword like 'if' or 'else'
+	// Do not move pointer if match not found
+	// Only match immediate characters
+	line = trimLeft(line);
+	STRING currentLine = line;
+	STRING currentVal = value;
+	
+	// Immediate characters must match otherwise 
+	// stop searching
+	while (*currentLine != '\0' && *currentVal != '\0') {
+		if (*currentLine != *currentVal) return false;
+		++currentVal;
+		++currentLine;
+	}
+
+	if (*currentVal != '\0') return false;
+
+	// Ensure that matched word is padded by whitespace
+	// Prevents 'if' being matched in 'ifelse'
+	// 'if' is only found if its 'if else'
+	if (*(currentLine) == '\0' || isWhiteSpace(*(currentLine))) {
+		line = trimLeft(currentLine);
+		return true;
+	}
+
+	return false;
+}
+
+bool find(STRING value, STRING& line) {
+	// Similar to consume
+	// We check whole line for first occurence
+	// Return pointer pointing to characters before
+	// matched word
+	line = trimLeft(line);
+	STRING currentLine = line;
+	STRING currentVal = value;
+
+	while (*currentLine != '\0' && *currentVal != '\0') {
+		if (*currentLine != *currentVal) currentVal = value;
+		if (*currentVal == *currentLine) ++currentVal;
+		++currentLine;
+	}
+
+	if (*currentVal != '\0') return false;
+
+	// Ensure that matched word is padded by whitespace
+	// Prevents 'if' being matched in 'ifelse'
+	// 'if' is only found if its 'if else'
+	// Return trimmed left to first meaningful character
+	if (*currentLine == '\0' || isWhiteSpace(*currentLine)) {
+		// Point to found word to allow consumption
+		line = currentLine - (currentVal - value);
+		return true;
+	}
+
+	return false;
+}
 
 INTEGER stringToInt(STRING line) {
 	INTEGER result = 0;
@@ -252,7 +308,6 @@ void parse(STRING line) {
 	// Determine Top-Level Command (Statement Identification)
 	while (*line != '\0') { 
 		++line;
-
 		if (*line == EQUAL && *(line-1) != EQUAL) {
 			++line;
 			// ASSIGNMENT MODE
@@ -268,6 +323,21 @@ void parse(STRING line) {
 			
 			INTEGER address = stringToInt(start, end);
 			write(address, parseExpression(line));
+
+			return;
+		} else if (consume(IF, line)) {
+			// IF statement
+			start = line;
+
+			if (!find(THEN, line)) {
+				// Invalid if statement
+				// No then
+			}
+		
+			INTEGER expression = parseExpression(start);
+			write(0, expression);
+
+			return;
 		}
 	}
 
@@ -319,10 +389,43 @@ void printHeap() {
 	cout << "\b\b ]\n";
 }
 
+void debugConsume(STRING value, STRING& line) {
+	STRING start = line;
+	std::cout << "Consuming keyword \"" << value << "\" immediately in \"" << line << "\"\n";
+
+	if (consume(value, line)) {
+		std::cout << "\"" << value << "\" was found\n";
+		std::cout << "\"" << *line << "\" at position " << line-start << "\n";
+	} else {
+		std::cout << "\"" << value << "\" was not found\n";
+	}
+}
+
+void debugFind(STRING value, STRING& line) {
+	STRING start = line;
+	std::cout << "Finding keyword \"" << value << "\" in \"" << line << "\"\n";
+	
+	if (find(value, line)) {
+		std::cout << "\"" << value << "\" was found\n";
+		std::cout << "\"" << *line << "\" at position " << line-start << "\n";
+	} else {
+		std::cout << "\"" << value << "\" was not found\n";
+	}
+
+}
+
 int main() {
 	initDebugHeap();
 	interpret("programs/main");
 	printHeap();
+
+	/*
+	STRING line = "IF M1 != M5 THEN";
+	STRING match = THEN;
+	//debugConsume(match, line);
+	debugFind(match, line);
+	*/
+
 	return 0;
 }
 

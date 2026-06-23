@@ -26,6 +26,10 @@ constexpr char EQUAL = '=';
 constexpr char LEFT_BRACKET = '('; 
 constexpr char RIGHT_BRACKET = ')'; 
 
+// Keywords
+constexpr STRING IF = "IF";
+constexpr STRING THEN = "THEN";
+
 // ========================
 // UNIVERSAL IMPLEMENTATION
 // ========================
@@ -38,6 +42,8 @@ INTEGER stringToInt(STRING line, STRING end);
 STRING trimLeft(STRING value);
 bool isWhiteSpace(const char& value);
 bool validAddress(INTEGER address); 
+bool consume(STRING value, STRING& line);
+bool find(STRING value, STRING& line);
 
 // Basic I/O
 void write(ADDR address, INTEGER value);
@@ -59,7 +65,6 @@ INTEGER term(STRING& line);
 INTEGER factor(STRING& line);
 INTEGER unary(STRING& line);
 INTEGER primary(STRING& line);
-
 
 INTEGER parseExpression(STRING& line);
 void parse(STRING line); 
@@ -85,6 +90,8 @@ void parse(STRING line);
 	// Debug Functions
 	void initDebugHeap();
 	void printHeap();
+	void debugConsume(STRING value, STRING& line);
+	void debugFind(STRING value, STRING& line);
 #else
 
 #endif 

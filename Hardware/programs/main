@@ -1,8 +1,5 @@
 # STORE IN MEM1
 M1 = 6 + 7
-# Multiply mem1 into mem2
-M2 = M1 * 10
-# Comparison
-M3 = M2 > M1
-# Store M3 into M0
-M0 = M3
+M5 = (11 *(M1-50)) / 5
+
+#IF M1 == M5 THEN

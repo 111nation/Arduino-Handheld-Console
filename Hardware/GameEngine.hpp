@@ -40,6 +40,7 @@ extern INTEGER* Heap;     // Heap memory
 INTEGER stringToInt(STRING line);
 INTEGER stringToInt(STRING line, STRING end);
 STRING trimLeft(STRING value);
+STRING findEnd(STRING line);
 bool isWhiteSpace(const char& value);
 bool validAddress(INTEGER address); 
 bool consume(STRING value, STRING& line);
@@ -59,13 +60,14 @@ INTEGER read(ADDR address);
 
 // Operator function calls defined in heirarichal order
 // Pass pointer by reference to have a global 'current' character tracker
-INTEGER equality(STRING& line); 						
-INTEGER comparison(STRING& line);
-INTEGER term(STRING& line);
-INTEGER factor(STRING& line);
-INTEGER unary(STRING& line);
-INTEGER primary(STRING& line);
+INTEGER equality(STRING& line, STRING& end); 						
+INTEGER comparison(STRING& line, STRING& end);
+INTEGER term(STRING& line, STRING& end);
+INTEGER factor(STRING& line, STRING& end);
+INTEGER unary(STRING& line, STRING& end);
+INTEGER primary(STRING& line, STRING& end);
 
+INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
 void parse(STRING line); 
 

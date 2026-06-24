@@ -1,10 +1,8 @@
 #include "GameEngine.hpp"
-#include <cmath>
 
 // UNIVERSAL IMPLEMENTATION
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
-
 
 bool consume(STRING value, STRING& line) {
 	// Move pointer past IMMEDIATE matched word
@@ -99,6 +97,12 @@ STRING trimLeft(STRING line) {
 	return line;
 }
 
+
+STRING findEnd(STRING line) {
+	while (*(line+1) != '\0') ++line;
+	return line;
+}
+
 // We accept a INTEGER instead of ADDR on purpose
 // Prevents silent downcasting/truncation overflow bugs
 // Ensures that numbers that overflow ADDR are not accepted as  
@@ -124,20 +128,20 @@ bool isWhiteSpace(const char& value) {
 }
 
 // ============ PARSING ==============
-INTEGER equality(STRING& line) {
-	INTEGER result = comparison(line);
+INTEGER equality(STRING& line, STRING& end) {
+	INTEGER result = comparison(line, end);
 	line = trimLeft(line);
 
-	while ((*line == EQUAL && *(line + 1) == EQUAL) || (*line == BANG && *(line + 1) == EQUAL)) {
+	while (line < end && ((*line == EQUAL && *(line + 1) == EQUAL) || (*line == BANG && *(line + 1) == EQUAL))) {
 		STRING operat = line;
 		line += 2; // Move past both characters making up '==' and '!='
 
 		if (*operat == EQUAL) {
 			// '==' Found
-			result = result == comparison(line) ? 1 : 0;
+			result = result == comparison(line, end) ? 1 : 0;
 		} else {
 			// '!=' Found
-			result = result != comparison(line) ? 1 : 0;
+			result = result != comparison(line, end) ? 1 : 0;
 		} 
 
 		line = trimLeft(line);
@@ -146,11 +150,11 @@ INTEGER equality(STRING& line) {
 	return result;
 }
 
-INTEGER comparison(STRING& line) {
-	INTEGER result = term(line);
+INTEGER comparison(STRING& line, STRING& end) {
+	INTEGER result = term(line, end);
 	line = trimLeft(line);
 
-	while (*line == LESS || *line == GREATER) {
+	while (line < end && (*line == LESS || *line == GREATER)) {
 		STRING operat = line;
 		bool equalOperator = false;
 		++line;
@@ -163,15 +167,15 @@ INTEGER comparison(STRING& line) {
 
 		if (*operat == LESS) {
 			if (equalOperator) {
-				result = result <= term(line) ? 1 : 0;
+				result = result <= term(line, end) ? 1 : 0;
 			} else {
-				result = result < term(line) ? 1 : 0;
+				result = result < term(line, end) ? 1 : 0;
 			}
 		} else {
 			if (equalOperator) {
-				result = result >= term(line) ? 1 : 0;
+				result = result >= term(line, end) ? 1 : 0;
 			} else {
-				result = result > term(line) ? 1 : 0;
+				result = result > term(line, end) ? 1 : 0;
 			}
 		}
 	}
@@ -179,36 +183,36 @@ INTEGER comparison(STRING& line) {
 	return result;
 }
 
-INTEGER term(STRING& line) {
-	INTEGER result = factor(line);
+INTEGER term(STRING& line, STRING& end) {
+	INTEGER result = factor(line, end);
 	line = trimLeft(line);
 
-	while (*line == ADDITION || *line == SUBTRACTION) {
+	while (line < end && (*line == ADDITION || *line == SUBTRACTION)) {
 		STRING operat = line;
 		++line;
 
 		if (*operat == ADDITION) {
-			result += factor(line);
+			result += factor(line, end);
 		} else {
-			result -= factor(line);
+			result -= factor(line, end);
 		}
 	}
 
 	return result;
 }
 
-INTEGER factor(STRING& line) {
-	INTEGER result = unary(line);
+INTEGER factor(STRING& line, STRING& end) {
+	INTEGER result = unary(line, end);
 	line = trimLeft(line);
 
-	while (*line == MULTIPLICATION || *line == DIVISION) {
+	while (line < end && (*line == MULTIPLICATION || *line == DIVISION)) {
 		STRING operat = line;
 		++line;
 
 		if (*operat == MULTIPLICATION) {
-			result *= unary(line);
+			result *= unary(line, end);
 		} else {
-			result /= unary(line);
+			result /= unary(line, end);
 		}
 
 		line = trimLeft(line);
@@ -217,37 +221,39 @@ INTEGER factor(STRING& line) {
 	return result;
 }
 
-INTEGER unary(STRING& line) {
+INTEGER unary(STRING& line, STRING& end) {
 	// Recursively check for unary operators '-!5' or '!!6' or '+-!M4'
 	// Returns a primary expression as soon as no
 	// unary operator has been found
 	line = trimLeft(line);
+	if (line >= end) return 0;
 
 	// Unary '!'
 	if (*line == BANG) {
 		++line;
-		return (unary(line) == 0 ? 1 : 0); 
+		return (unary(line, end) == 0 ? 1 : 0); 
 	}
 
 	// Unary '-'
 	if (*line == SUBTRACTION) {
 		++line;
-		return -1 * unary(line);
+		return -1 * unary(line, end);
 	}
 
 	// Unary '+'
 	if (*line == ADDITION) {
 		++line;
-		return +1 * unary(line);
+		return +1 * unary(line, end);
 	}
 
 	// No operator found, drop down to primary
-	return primary(line);
+	return primary(line, end);
 }
 
-INTEGER primary(STRING& line) {
+INTEGER primary(STRING& line, STRING& end) {
 	// Check for literal values, variables, or numbers
 	line = trimLeft(line);
+	if (line >= end) return 0;
 
 	// Handle paranthesis
 	if (*line == LEFT_BRACKET) {
@@ -255,7 +261,7 @@ INTEGER primary(STRING& line) {
 		// Are treated as sperate new expressions
 		++line;
 
-		INTEGER result = equality(line);
+		INTEGER result = equality(line, end);
 		line = trimLeft(line);
 
 		// Silently forgive missing closing bracket
@@ -267,30 +273,42 @@ INTEGER primary(STRING& line) {
 	if (*line >= '0' && *line <= '9') {
 		// Parse literal number and return to upper operators
 		STRING start = line;
-		while (*line >= '0' && * line <= '9') ++line; 
+		while (line < end && (*line >= '0' && * line <= '9')) ++line; 
 		return stringToInt(start, line); 
 	} else if (*line == MEM_PREFIX) {
 		// Heap Address referenced
 		// Return value of the memory address
 		STRING start = ++line;
-		while (*line >= '0' && *line <= '9') ++line;
+		while (line < end && (*line >= '0' && *line <= '9')) ++line;
 
 		// stringToInt returns INTEGER not ADDR, ensure non truncation
 		INTEGER rawAddress = stringToInt(start, line);
-
-		if (validAddress(rawAddress)) return read(rawAddress);
+		return read(rawAddress);
 	}
 
 	return 0; // Saftey fallback
 }
 
+INTEGER parseExpression(STRING& line, STRING& end) {
+	// Parse A Maths Expression And Return its value
+	// Heirarchial order algorithm defined by: 
+	// http://craftinginterpreters.com/parsing-expressions.html
+	// Parse till the end (excluded)
+	line = trimLeft(line);
+	if (*line == '\0') return 0;
+	return equality(line, end);	
+}
+
+
 INTEGER parseExpression(STRING& line) {
 	// Parse A Maths Expression And Return its value
 	// Heirarchial order algorithm defined by: 
 	// http://craftinginterpreters.com/parsing-expressions.html
+	// Parse till the end of the line
 	line = trimLeft(line);
 	if (*line == '\0') return 0;
-	return equality(line);	
+	STRING end = findEnd(line)+1; // Indicate EOL
+	return equality(line, end);	
 }
 
 void parse(STRING line) {
@@ -326,6 +344,10 @@ void parse(STRING line) {
 
 			return;
 		} else if (consume(IF, line)) {
+		}
+
+		/*
+		else if (consume(IF, line)) {
 			// IF statement
 			start = line;
 
@@ -338,7 +360,7 @@ void parse(STRING line) {
 			write(0, expression);
 
 			return;
-		}
+		}*/
 	}
 
 	if (*line == '\0') return; // Drop lines without a useful command
@@ -415,16 +437,16 @@ void debugFind(STRING value, STRING& line) {
 }
 
 int main() {
+	/*
 	initDebugHeap();
 	interpret("programs/main");
 	printHeap();
+	*/
 
-	/*
-	STRING line = "IF M1 != M5 THEN";
+	STRING line = "IF M1 != M5 UTHEN";
 	STRING match = THEN;
 	//debugConsume(match, line);
 	debugFind(match, line);
-	*/
 
 	return 0;
 }

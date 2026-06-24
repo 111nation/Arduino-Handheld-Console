@@ -9,8 +9,7 @@ bool consume(STRING value, STRING& line) {
 	// Used for searching keyword like 'if' or 'else'
 	// Do not move pointer if match not found
 	// Only match immediate characters
-	line = trimLeft(line);
-	STRING currentLine = line;
+	STRING currentLine = trimLeft(line);
 	STRING currentVal = value;
 	
 	// Immediate characters must match otherwise 
@@ -34,13 +33,14 @@ bool consume(STRING value, STRING& line) {
 	return false;
 }
 
-bool find(STRING value, STRING& line) {
+bool find(STRING value, STRING& line, STRING start) {
 	// Similar to consume
 	// We check whole line for first occurence
 	// Return pointer pointing to characters before
 	// matched word
-	line = trimLeft(line);
-	STRING currentLine = line;
+	if (line < start) return false;
+
+	STRING currentLine = trimLeft(line);
 	STRING currentVal = value;
 
 	while (*currentLine != '\0' && *currentVal != '\0') {
@@ -51,13 +51,16 @@ bool find(STRING value, STRING& line) {
 
 	if (*currentVal != '\0') return false;
 
-	// Ensure that matched word is padded by whitespace
-	// Prevents 'if' being matched in 'ifelse'
-	// 'if' is only found if its 'if else'
-	// Return trimmed left to first meaningful character
-	if (*currentLine == '\0' || isWhiteSpace(*currentLine)) {
-		// Point to found word to allow consumption
-		line = currentLine - (currentVal - value);
+	// Ensure that found word is a stand alone token
+	// Padded by leading and trailing whitespace
+	bool validTrailing = *currentLine == '\0' || isWhiteSpace(*currentLine);
+
+	// Move to front of token
+	currentLine = currentLine - (currentVal - value); 
+	bool validLeading = currentLine == start || isWhiteSpace(*(currentLine-1));
+
+	if (validLeading && validTrailing) {
+		line = currentLine;
 		return true;
 	}
 
@@ -97,17 +100,16 @@ STRING trimLeft(STRING line) {
 	return line;
 }
 
-
 STRING findEnd(STRING line) {
 	while (*(line+1) != '\0') ++line;
 	return line;
 }
 
-// We accept a INTEGER instead of ADDR on purpose
-// Prevents silent downcasting/truncation overflow bugs
-// Ensures that numbers that overflow ADDR are not accepted as  
-// valid addresses due to truncation
 bool validAddress(INTEGER address) {
+	// We accept a INTEGER instead of ADDR on purpose
+	// Prevents silent downcasting/truncation overflow bugs
+	// Ensures that numbers that overflow ADDR are not accepted as  
+	// valid addresses due to truncation
 	return address >= 0 && address < HEAP_SIZE;
 }
 
@@ -321,11 +323,11 @@ void parse(STRING line) {
 	if (*line == '\0') return;
 	if (*line == INLINE_COMMENT) return;
 
+
 	STRING start = line;
 
 	// Determine Top-Level Command (Statement Identification)
 	while (*line != '\0') { 
-		++line;
 		if (*line == EQUAL && *(line-1) != EQUAL) {
 			++line;
 			// ASSIGNMENT MODE
@@ -344,22 +346,29 @@ void parse(STRING line) {
 
 			return;
 		} else if (consume(IF, line)) {
-		}
-
-		/*
-		else if (consume(IF, line)) {
 			// IF statement
 			start = line;
 
-			if (!find(THEN, line)) {
-				// Invalid if statement
-				// No then
+			if (!find(THEN, line, start)) {
+				// Syntax Error: 'THEN' Missing
+				return;
 			}
-		
-			INTEGER expression = parseExpression(start);
-			write(0, expression);
+			
+			INTEGER expression = parseExpression(start, line);
+
+			if (expression) {
+				//parseCodeBlock();
+			} else {
+				//std::cout << "FALSE\n";
+			}
 
 			return;
+		}
+
+		++line;
+
+		/*
+		else if (consume(IF, line)) {
 		}*/
 	}
 
@@ -370,19 +379,20 @@ void parse(STRING line) {
 
 using namespace std;
 
-void interpret(std::string fileName) {
+ifstream File;
+
+void interpret() {
 	// Read file and return its string data
-	ifstream file(fileName);
 	string line;	
 
 	// Read File Contents
-	while (getline(file, line)) {
+	while (getline(File, line)) {
 		// Skip leading whitespace
 		//std::cout << line.c_str() << "\n";
 		parse(line.c_str());
 	}
 
-	file.close();
+	File.close();
 }
 
 void initDebugHeap() {
@@ -423,11 +433,10 @@ void debugConsume(STRING value, STRING& line) {
 	}
 }
 
-void debugFind(STRING value, STRING& line) {
-	STRING start = line;
-	std::cout << "Finding keyword \"" << value << "\" in \"" << line << "\"\n";
+void debugFind(STRING value, STRING& line, STRING start) {
+	std::cout << "Finding keyword \"" << value << "\" in \"" << start << "\"\n";
 	
-	if (find(value, line)) {
+	if (find(value, line, start)) {
 		std::cout << "\"" << value << "\" was found\n";
 		std::cout << "\"" << *line << "\" at position " << line-start << "\n";
 	} else {
@@ -437,16 +446,20 @@ void debugFind(STRING value, STRING& line) {
 }
 
 int main() {
-	/*
-	initDebugHeap();
-	interpret("programs/main");
-	printHeap();
-	*/
+	File.open("programs/main");
 
+	initDebugHeap();
+	interpret();
+	printHeap();
+
+	File.close();
+
+	/*
 	STRING line = "IF M1 != M5 UTHEN";
 	STRING match = THEN;
 	//debugConsume(match, line);
-	debugFind(match, line);
+	debugFind(match, line, line);
+	*/
 
 	return 0;
 }

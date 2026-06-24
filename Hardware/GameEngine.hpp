@@ -29,6 +29,7 @@ constexpr char RIGHT_BRACKET = ')';
 // Keywords
 constexpr STRING IF = "IF";
 constexpr STRING THEN = "THEN";
+constexpr STRING END = "END";
 
 // ========================
 // UNIVERSAL IMPLEMENTATION
@@ -44,7 +45,7 @@ STRING findEnd(STRING line);
 bool isWhiteSpace(const char& value);
 bool validAddress(INTEGER address); 
 bool consume(STRING value, STRING& line);
-bool find(STRING value, STRING& line);
+bool find(STRING value, STRING& line, STRING start);
 
 // Basic I/O
 void write(ADDR address, INTEGER value);
@@ -69,6 +70,7 @@ INTEGER primary(STRING& line, STRING& end);
 
 INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
+bool parseCodeBlock();
 void parse(STRING line); 
 
 
@@ -87,13 +89,15 @@ void parse(STRING line);
 
 	using namespace std;
 
-	void interpret(string fileName);
+	extern ifstream File;
+
+	void interpret();
 
 	// Debug Functions
 	void initDebugHeap();
 	void printHeap();
-	void debugConsume(STRING value, STRING& line);
-	void debugFind(STRING value, STRING& line);
+	void debugConsume(STRING value, STRING& line, STRING& start);
+	void debugFind(STRING value, STRING& line, STRING start);
 #else
 
 #endif 

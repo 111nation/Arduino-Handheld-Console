@@ -1,5 +1,6 @@
 #include "GameEngine.hpp"
 
+//#define DEBUG
 
 /* LED LIGHT PARAMETERS */
 constexpr int RED_PIN = 6;
@@ -155,29 +156,6 @@ void retrieveJoystickActions(Joystick& joystick) {
   joystick.clicked = (digitalRead(JOYSTICK_BUTTON_PIN) == 0);
 }
 
-void debugControlActions(Control& control) {
-  debugJoystickActions(control.joystick);
-  
-  if (control.buttonAClicked) {
-    Serial.println("Button A Clicked");
-  }
-}
-
-void debugJoystickActions(Joystick& joystick) {
-  // Print debug messages when joystick has been interacted with
-  if (joystick.x == 0 && joystick.y == 0 && !joystick.clicked) return;
-
-  Serial.print("X:");
-  Serial.println(joystick.x);
-
-  Serial.print("Y:");
-  Serial.println(joystick.y);
-
-  if (joystick.clicked) {
-    Serial.println("Joystick pressed");
-  }
-}
-
 void changeLED(int red, int green, int blue) {
   // Accept regular 0-255 rgb input and scale it to 0-1023 for
   // analogWrite
@@ -190,3 +168,28 @@ void changeLED(int red, int green, int blue) {
   analogWrite(GREEN_PIN, green / 255.0 * 1023);
   analogWrite(BLUE_PIN, blue / 255.0 * 1023);
 }
+
+#ifdef DEBUG
+  void debugControlActions(Control& control) {
+    debugJoystickActions(control.joystick);
+    
+    if (control.buttonAClicked) {
+      Serial.println(F("Button A Clicked"));
+    }
+  }
+
+  void debugJoystickActions(Joystick& joystick) {
+    // Print debug messages when joystick has been interacted with
+    if (joystick.x == 0 && joystick.y == 0 && !joystick.clicked) return;
+
+    Serial.print(f("X:"));
+    Serial.println(joystick.x);
+
+    Serial.print(F("Y:"));
+    Serial.println(joystick.y);
+
+    if (joystick.clicked) {
+      Serial.println(F("Joystick pressed"));
+    }
+  }
+#endif

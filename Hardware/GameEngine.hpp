@@ -29,6 +29,7 @@ constexpr char RIGHT_BRACKET = ')';
 // Keywords
 constexpr STRING IF = "IF";
 constexpr STRING THEN = "THEN";
+constexpr STRING ELSE = "ELSE";
 constexpr STRING END = "END";
 
 // ========================
@@ -52,6 +53,7 @@ void write(ADDR address, INTEGER value);
 INTEGER read(ADDR address);
 
 // Parsing and Interpreting
+extern uint8_t nestingLevel; // Track the level of nesting
 
 // Expression Parsing
 // Derived from: http://craftinginterpreters.com/parsing-expressions.html
@@ -70,8 +72,9 @@ INTEGER primary(STRING& line, STRING& end);
 
 INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
-bool parseCodeBlock();
-void parse(STRING line); 
+void skipCodeBlock();
+void parseCodeBlock(bool execute=true);
+void parse(STRING line, bool execute=true); 
 
 
 #define EMULATE

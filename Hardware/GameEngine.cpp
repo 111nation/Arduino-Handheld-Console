@@ -3,6 +3,7 @@
 // UNIVERSAL IMPLEMENTATION
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
+uint8_t nestingLevel = 0; 
 
 bool consume(STRING value, STRING& line) {
 	// Move pointer past IMMEDIATE matched word
@@ -301,7 +302,6 @@ INTEGER parseExpression(STRING& line, STRING& end) {
 	return equality(line, end);	
 }
 
-
 INTEGER parseExpression(STRING& line) {
 	// Parse A Maths Expression And Return its value
 	// Heirarchial order algorithm defined by: 
@@ -313,7 +313,7 @@ INTEGER parseExpression(STRING& line) {
 	return equality(line, end);	
 }
 
-void parse(STRING line) {
+void parse(STRING line, bool execute) {
 	// Parse a single line
 	
 	// Skip leading whitespace
@@ -328,7 +328,8 @@ void parse(STRING line) {
 
 	// Determine Top-Level Command (Statement Identification)
 	while (*line != '\0') { 
-		if (*line == EQUAL && *(line-1) != EQUAL) {
+		bool assignment = *line == EQUAL && *(line-1) != EQUAL;
+		if (execute && assignment) {
 			++line;
 			// ASSIGNMENT MODE
 			// Expect {ADDRESS} = {EXPRESSION}
@@ -353,23 +354,26 @@ void parse(STRING line) {
 				// Syntax Error: 'THEN' Missing
 				return;
 			}
+
+			if (!execute) {
+				parseCodeBlock(false);
+				return;
+			}
 			
 			INTEGER expression = parseExpression(start, line);
 
 			if (expression) {
-				//parseCodeBlock();
+				parseCodeBlock();
 			} else {
-				//std::cout << "FALSE\n";
+				parseCodeBlock(false); // Do not execute code block
 			}
 
+			return;
+		} else if (consume(END, line)) {
 			return;
 		}
 
 		++line;
-
-		/*
-		else if (consume(IF, line)) {
-		}*/
 	}
 
 	if (*line == '\0') return; // Drop lines without a useful command
@@ -387,12 +391,32 @@ void interpret() {
 
 	// Read File Contents
 	while (getline(File, line)) {
-		// Skip leading whitespace
-		//std::cout << line.c_str() << "\n";
 		parse(line.c_str());
 	}
 
 	File.close();
+}
+
+void parseCodeBlock(bool execute) {
+	// Parse code block layer until you reach 'END'
+	++nestingLevel;
+	string line;
+	while (getline(File, line)) {
+		STRING cLine = line.c_str();
+
+		if (find(END, cLine, cLine)) {
+			--nestingLevel;
+			return;
+		} else if (find(ELSE, cLine, cLine)) {
+			--nestingLevel;
+			return;
+		}
+
+		// Parse line within code block
+		// Recursively calls if more code blocks exist
+		parse(line.c_str(), execute);	
+	}
+	--nestingLevel;
 }
 
 void initDebugHeap() {

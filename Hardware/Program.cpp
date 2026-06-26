@@ -3,6 +3,25 @@
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 STRING PC;			// Program Counter
 
+bool validAddress(INTEGER address) {
+	// We accept a INTEGER instead of ADDR on purpose
+	// Prevents silent downcasting/truncation overflow bugs
+	// Ensures that numbers that overflow ADDR are not accepted as  
+	// valid addresses due to truncation
+	return address >= 0 && address < HEAP_SIZE;
+}
+
+void write(ADDR address, INTEGER value) {
+	// Write value at specified heap address
+	if (!validAddress(address)) return;
+	Heap[address] = value;
+}
+
+INTEGER read(ADDR address) {
+	// Return value at specified heap address
+	return validAddress(address) ? Heap[address] : 0;
+}
+
 #ifdef EMULATE 
 	using namespace std;
 

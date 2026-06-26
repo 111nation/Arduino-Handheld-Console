@@ -18,10 +18,6 @@ void close();
 #ifdef EMULATE 
 	#include <fstream>
 	#include <string>
-
-	using namespace std;
-
-	extern ifstream File;
 #else
 
 #endif

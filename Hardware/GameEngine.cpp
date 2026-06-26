@@ -383,23 +383,16 @@ void parse(STRING line, bool execute) {
 using namespace std;
 
 void interpret() {
-	// Read file and return its string data
-	string line;	
-
-	// Read File Contents
-	while (getline(File, line)) {
-		parse(line.c_str());
+	while (next()) {
+		parse(PC);
 	}
-
-	File.close();
 }
 
 void parseCodeBlock(bool execute) {
 	// Parse code block layer until you reach 'END'
 	++nestingLevel;
-	string line;
-	while (getline(File, line)) {
-		STRING cLine = line.c_str();
+	while (next()) {
+		STRING cLine = PC;
 
 		if (find(END, cLine, cLine)) {
 			--nestingLevel;
@@ -411,7 +404,7 @@ void parseCodeBlock(bool execute) {
 
 		// Parse line within code block
 		// Recursively calls if more code blocks exist
-		parse(line.c_str(), execute);	
+		parse(PC, execute);	
 	}
 	--nestingLevel;
 }

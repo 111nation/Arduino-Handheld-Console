@@ -347,10 +347,18 @@ void parseWhileBlock(bool execute) {
 
 			// Move cursor back to While loop
 			jump(curStart);
+
+			find(WHILE, PC, start);
+			consume(WHILE, PC);
+
 			start = PC;
+
 			find(DO, PC, start); // Assume 'DO' Exists from prior check
+
 			expression = parseExpression(start, PC);
 		}
+
+		parseCodeBlock(false);
 	} else {
 		// Skip while loop
 		parseCodeBlock(false);

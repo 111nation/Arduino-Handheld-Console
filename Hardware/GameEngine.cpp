@@ -26,7 +26,7 @@ void printHeap(bool symbols) {
 	bool allowEllips = true;
 	for (int i = 0; i < HEAP_SIZE; i++) {
 		if (Heap[i] == NULL_INT) {
-			if (allowEllips) cout << "... ,";
+			if (allowEllips) cout << "... , ";
 			allowEllips = false;
 			continue;
 		} 
@@ -36,11 +36,11 @@ void printHeap(bool symbols) {
 		}
 
 
-		cout << Heap[i] << " ,";
+		cout << Heap[i] << " , ";
 		allowEllips = true;
 	}
 
-	cout << "\b\b ]\n";
+	cout << "\b\b]\n";
 }
 
 void debugConsume(STRING value, STRING& line) {
@@ -117,22 +117,13 @@ void debugCursor() {
 }
 
 int main() {
-	/*
 	init("programs/main");
 	initDebugHeap();
 	interpret();
 	printHeap(true);
 	close();
-	*/
 
-	debugCursor();
-
-	/*
-	STRING line = "IF M1 != M5 UTHEN";
-	STRING match = THEN;
-	//debugConsume(match, line);
-	debugFind(match, line, line);
-	*/
+	//debugCursor();
 
 	return 0;
 }

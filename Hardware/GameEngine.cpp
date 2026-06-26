@@ -10,26 +10,6 @@ void interpret() {
 	}
 }
 
-void parseCodeBlock(bool execute) {
-	// Parse code block layer until you reach 'END'
-	++nestingLevel;
-	while (next()) {
-		STRING cLine = PC;
-
-		if (find(END, cLine, cLine)) {
-			--nestingLevel;
-			return;
-		} else if (find(ELSE, cLine, cLine)) {
-			--nestingLevel;
-			return;
-		}
-
-		// Parse line within code block
-		// Recursively calls if more code blocks exist
-		parse(PC, execute);	
-	}
-	--nestingLevel;
-}
 
 void initDebugHeap() {
 	// Set all heap values to "null" by setting a large negative number

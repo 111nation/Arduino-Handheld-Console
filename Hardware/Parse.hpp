@@ -57,6 +57,7 @@ INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
 void skipCodeBlock();
 void parseCodeBlock(bool execute=true);
+void parseIfBlock(STRING& line, bool execute=true);
 void parse(STRING line, bool execute=true); 
 
 #endif

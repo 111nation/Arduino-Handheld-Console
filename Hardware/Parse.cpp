@@ -40,7 +40,7 @@ bool consume(STRING value, STRING& line) {
 bool find(STRING value, STRING& line, STRING start) {
 	// Similar to consume
 	// We check whole line for first occurence
-	// Return pointer pointing to characters before
+	// Move pointer pointing to characters before
 	// matched word
 	if (line < start) return false;
 
@@ -292,6 +292,56 @@ INTEGER parseExpression(STRING& line) {
 	return equality(line, end);	
 }
 
+void parseIfBlock(STRING& line, bool execute) {
+	// Handle Parsing of whole IF block
+	// Assumes the IF keyword was consumed Prior
+	// Grabs expression and determines to run specific if block
+	// IF statement
+	
+	STRING start = line;
+
+	if (!find(THEN, line, start)) {
+		// Syntax Error: 'THEN' Missing
+		return;
+	}
+
+	if (!execute) {
+		parseCodeBlock(false);
+		return;
+	}
+	
+	INTEGER expression = parseExpression(start, line);
+
+	if (expression) {
+		parseCodeBlock();
+	} else {
+		parseCodeBlock(false); // Do not execute code block
+	}
+
+	// Check if subsequent else blocks needs to be skipped
+}
+
+void parseCodeBlock(bool execute) {
+	// Parse code block layer until you reach 'END'
+	++nestingLevel;
+	while (next()) {
+		if (find(END, PC, PC)) {
+			// END 
+			--nestingLevel;
+			return;
+		} else if (find(ELSE, PC, PC)) {
+			// ELSE BLOCK 
+			--nestingLevel;
+			return;
+		}
+
+		// Parse line within code block
+		// Recursively calls if more code blocks exist
+		parse(PC, execute);	
+	}
+	--nestingLevel;
+}
+
 void parse(STRING line, bool execute) {
 	// Parse a single line
 	
@@ -326,27 +376,7 @@ void parse(STRING line, bool execute) {
 
 			return;
 		} else if (consume(IF, line)) {
-			// IF statement
-			start = line;
-
-			if (!find(THEN, line, start)) {
-				// Syntax Error: 'THEN' Missing
-				return;
-			}
-
-			if (!execute) {
-				parseCodeBlock(false);
-				return;
-			}
-			
-			INTEGER expression = parseExpression(start, line);
-
-			if (expression) {
-				parseCodeBlock();
-			} else {
-				parseCodeBlock(false); // Do not execute code block
-			}
-
+			parseIfBlock(line);
 			return;
 		} else if (consume(END, line)) {
 			return;

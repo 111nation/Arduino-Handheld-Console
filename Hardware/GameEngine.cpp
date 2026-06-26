@@ -6,9 +6,9 @@
 using namespace std;
 
 void interpret() {
-	while (next()) {
+	do {
 		parse();
-	}
+	} while (next());
 }
 
 

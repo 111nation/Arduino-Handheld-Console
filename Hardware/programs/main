@@ -1,0 +1,30 @@
+M0 = 3
+M1 = 2
+M2 = 0
+M5 = 0
+
+WHILE M0 DO
+    M0 = M0 - 1
+    M1 = 2
+    
+    WHILE M1 DO
+        M1 = M1 - 1
+        M2 = M2 + 1
+        
+        IF M0 == 1 THEN
+            IF M1 == 0 THEN
+                M5 = M5 + 1000
+            END
+        END
+    END
+END
+
+M10 = 50
+M11 = 25
+M12 = 0
+
+IF M10 > M11 THEN
+    M12 = 1
+ELSE
+    M12 = 2
+END

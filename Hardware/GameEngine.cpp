@@ -6,7 +6,7 @@ using namespace std;
 
 void interpret() {
 	while (next()) {
-		parse(PC);
+		parse();
 	}
 }
 

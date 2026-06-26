@@ -1,6 +1,6 @@
 #include "Parse.hpp"
 
-uint8_t nestingLevel = 0; 
+uint8_t NestingLevel = 0; 
 
 // ============ HELPERS ==============
 bool isWhiteSpace(const char& value) {
@@ -292,20 +292,20 @@ INTEGER parseExpression(STRING& line) {
 	return equality(line, end);	
 }
 
-void parseIfBlock(STRING& line, bool execute) {
+void parseIfBlock(bool execute) {
 	// Handle Parsing of whole IF block
 	// Assumes the IF keyword was consumed Prior
 	// Grabs expression and determines to run specific if block
 	// IF statement
 	
-	STRING start = line;
+	STRING start = PC;
 
-	if (!find(THEN, line, start)) {
+	if (!find(THEN, PC, start)) {
 		// Syntax Error: 'THEN' Missing
 		return;
 	}
 
-	INTEGER expression = execute ? parseExpression(start, line) : 0;
+	INTEGER expression = execute ? parseExpression(start, PC) : 0;
 
 	parseCodeBlock(expression && execute);
 
@@ -318,7 +318,7 @@ void parseIfBlock(STRING& line, bool execute) {
 	// Else code block detected
 	
 	if (consume(IF, PC)) {
-		parseIfBlock(PC, !expression && execute); // Recursively calls to the next else if
+		parseIfBlock(!expression && execute); // Recursively calls to the next else if
 	} else {
 		parseCodeBlock(!expression && execute);
 	}
@@ -326,42 +326,42 @@ void parseIfBlock(STRING& line, bool execute) {
 
 void parseCodeBlock(bool execute) {
 	// Parse code block layer until you reach 'END'
-	++nestingLevel;
+	++NestingLevel;
 	while (next()) {
 		if (find(END, PC, PC)) {
 			// END 
-			--nestingLevel;
+			--NestingLevel;
 			return;
 		} else if (find(ELSE, PC, PC)) {
 			// ELSE BLOCK 
-			--nestingLevel;
+			--NestingLevel;
 			return;
 		}
 
 		// Parse line within code block
 		// Recursively calls if more code blocks exist
-		parse(PC, execute);	
+		parse(execute);	
 	}
-	--nestingLevel;
+	--NestingLevel;
 }
 
-void parse(STRING line, bool execute) {
+void parse(bool execute) {
 	// Parse a single line
 	
 	// Skip leading whitespace
-	line = trimLeft(line);
+	PC = trimLeft(PC);
 
 	// Skip blank lines and comments
-	if (*line == '\0') return;
-	if (*line == INLINE_COMMENT) return;
+	if (*PC == '\0') return;
+	if (*PC == INLINE_COMMENT) return;
 
-	STRING start = line;
+	STRING start = PC;
 
 	// Determine Top-Level Command (Statement Identification)
-	while (*line != '\0') { 
-		bool assignment = *line == EQUAL && *(line-1) != EQUAL;
+	while (*PC != '\0') { 
+		bool assignment = *PC == EQUAL && *(PC-1) != EQUAL;
 		if (execute && assignment) {
-			++line;
+			++PC;
 			// ASSIGNMENT MODE
 			// Expect {ADDRESS} = {EXPRESSION}
 			
@@ -374,18 +374,18 @@ void parse(STRING line, bool execute) {
 			while (*end >= '0' && *end <= '9') ++end;
 			
 			INTEGER address = stringToInt(start, end);
-			write(address, parseExpression(line));
+			write(address, parseExpression(PC));
 
 			return;
-		} else if (consume(IF, line)) {
-			parseIfBlock(line, execute);
+		} else if (consume(IF, PC)) {
+			parseIfBlock(execute);
 			return;
-		} else if (*line == INLINE_COMMENT) {
+		} else if (*PC == INLINE_COMMENT) {
 			return;
 		}
 
-		++line;
+		++PC;
 	}
 
-	if (*line == '\0') return; // Drop lines without a useful command
+	if (*PC == '\0') return; // Drop lines without a useful command
 }

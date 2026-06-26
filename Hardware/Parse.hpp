@@ -23,11 +23,13 @@ constexpr char RIGHT_BRACKET = ')';
 // Keywords
 constexpr STRING IF = "IF";
 constexpr STRING THEN = "THEN";
+constexpr STRING WHILE = "WHILE";
+constexpr STRING DO = "DO";
 constexpr STRING ELSE = "ELSE";
 constexpr STRING END = "END";
 
 // Parsing and Interpreting
-extern uint8_t nestingLevel; // Track the level of nesting
+extern uint8_t NestingLevel; // Track the level of nesting
 
 // HELPERS
 INTEGER stringToInt(STRING line);
@@ -55,9 +57,8 @@ INTEGER primary(STRING& line, STRING& end);
 
 INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
-void skipCodeBlock();
 void parseCodeBlock(bool execute=true);
-void parseIfBlock(STRING& line, bool execute=true);
-void parse(STRING line, bool execute=true); 
+void parseIfBlock(bool execute=true);
+void parse(bool execute=true); 
 
 #endif

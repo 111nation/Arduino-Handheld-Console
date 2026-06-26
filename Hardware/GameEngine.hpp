@@ -22,6 +22,10 @@
 	void printHeap(bool symbols=false);
 	void debugConsume(STRING value, STRING& line, STRING& start);
 	void debugFind(STRING value, STRING& line, STRING start);
+	void debugCursor();
+	void debugPrintPC();
+	CURSOR debugCheckpoint();
+	void debugJump(CURSOR location);
 #else
 
 #endif 

@@ -27,21 +27,34 @@ INTEGER read(ADDR address) {
 
 	string sPC; // Program Counter as a C++ Style String
 	ifstream File;
+	streampos Cursor;
 
 	bool init(STRING fileName) {
 		if (File.is_open()) File.close();
 		File.open(fileName);
+		Cursor = checkpoint();
 		return next(); // Load first line
 	}
 
 	bool next() {
 		// Load first line to Program Counter
+		Cursor = File.tellg();
 		if (File.is_open() && getline(File, sPC)) {
 			PC = sPC.c_str();
 			return true;
 		}
 
 		return false;
+	}
+
+	CURSOR checkpoint() {
+		// Save current cursor position
+		return Cursor;
+	}
+
+	bool jump(CURSOR location) {
+		File.seekg(location);
+		return next();
 	}
 
 	void close() {

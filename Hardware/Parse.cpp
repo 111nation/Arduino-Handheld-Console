@@ -1,4 +1,5 @@
 #include "Parse.hpp"
+#include "Program.hpp"
 
 uint8_t NestingLevel = 0; 
 
@@ -295,7 +296,7 @@ INTEGER parseExpression(STRING& line) {
 void parseIfBlock(bool execute) {
 	// Handle Parsing of whole IF block
 	// Assumes the IF keyword was consumed Prior
-	// Grabs expression and determines to run specific if block
+	// Grabs expression and determines to run specific IF block
 	// IF statement
 	
 	STRING start = PC;
@@ -322,6 +323,39 @@ void parseIfBlock(bool execute) {
 	} else {
 		parseCodeBlock(!expression && execute);
 	}
+}
+
+void parseWhileBlock(bool execute) {
+	// Handle Parsing of whole WHILE block
+	// Assumes the WHILE keyword was consumed Prior
+	// Grabs expression and determines to run specific WHILE block
+	// WHILE statement
+	
+	STRING start = PC;
+	CURSOR curStart = checkpoint();
+
+	if (!find(DO, PC, start)) {
+		// Syntax Error: 'DO' Missing
+		return;
+	}
+
+	INTEGER expression = execute ? parseExpression(start, PC) : 0;
+
+	if (execute && expression) {
+		while (expression) {
+			parseCodeBlock();
+
+			// Move cursor back to While loop
+			jump(curStart);
+			start = PC;
+			find(DO, PC, start); // Assume 'DO' Exists from prior check
+			expression = parseExpression(start, PC);
+		}
+	} else {
+		// Skip while loop
+		parseCodeBlock(false);
+	}
+
 }
 
 void parseCodeBlock(bool execute) {
@@ -379,6 +413,9 @@ void parse(bool execute) {
 			return;
 		} else if (consume(IF, PC)) {
 			parseIfBlock(execute);
+			return;
+		} else if (consume(WHILE, PC)) {
+			parseWhileBlock(execute);
 			return;
 		} else if (*PC == INLINE_COMMENT) {
 			return;

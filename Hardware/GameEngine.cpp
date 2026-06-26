@@ -1,4 +1,5 @@
 #include "GameEngine.hpp"
+#include "Program.hpp"
 
 #ifdef EMULATE 
 
@@ -20,12 +21,12 @@ void initDebugHeap() {
 
 void printHeap(bool symbols) {
 	// Print heap and skip empty contents
-	cout << "Heap:\t[";
+	cout << "Heap:\t[ ";
 	
 	bool allowEllips = true;
 	for (int i = 0; i < HEAP_SIZE; i++) {
 		if (Heap[i] == NULL_INT) {
-			if (allowEllips) cout << "... , ";
+			if (allowEllips) cout << "... ,";
 			allowEllips = false;
 			continue;
 		} 
@@ -35,7 +36,7 @@ void printHeap(bool symbols) {
 		}
 
 
-		cout << Heap[i] << " , ";
+		cout << Heap[i] << " ,";
 		allowEllips = true;
 	}
 
@@ -66,12 +67,65 @@ void debugFind(STRING value, STRING& line, STRING start) {
 
 }
 
+void debugPrintPC() {
+	if (!PC) {
+		std::cout << "ERROR:\tPC is NULL\n";
+		return;
+	}
+
+	std::cout << "PRINT:\t\t" << PC << "\n";
+}
+
+CURSOR debugCheckpoint() {
+	if (!PC) {
+		std::cout << "ERROR:\tPC is NULL\n";
+		return checkpoint();
+	}
+
+	std::cout << "CHECKPOINT:\t" << PC << "\n";
+	return checkpoint(); 
+}
+
+void debugJump(CURSOR location) {
+	if (!PC) {
+		std::cout << "ERROR:\tPC is NULL\n";
+		return;
+	}
+
+	jump(location);
+	std::cout << "JUMP:\t\t" << PC << "\n";
+}
+
+void debugCursor() {
+	init("programs/main");
+	debugPrintPC();
+	next();
+	debugPrintPC();
+	CURSOR cur = debugCheckpoint();
+	next();
+	debugPrintPC();
+	next();
+	debugPrintPC();
+	next();
+	next();
+	CURSOR cur2 = debugCheckpoint();
+	debugJump(cur);
+	debugPrintPC();
+	debugJump(cur2);
+	debugPrintPC();
+	close();
+}
+
 int main() {
+	/*
 	init("programs/main");
 	initDebugHeap();
 	interpret();
 	printHeap(true);
 	close();
+	*/
+
+	debugCursor();
 
 	/*
 	STRING line = "IF M1 != M5 UTHEN";

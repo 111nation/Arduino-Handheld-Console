@@ -305,20 +305,23 @@ void parseIfBlock(STRING& line, bool execute) {
 		return;
 	}
 
-	if (!execute) {
-		parseCodeBlock(false);
-		return;
-	}
+	INTEGER expression = execute ? parseExpression(start, line) : 0;
+
+	parseCodeBlock(expression && execute);
+
+	// parseCodeBlock terminates while
+	// having cursor on the END or ELSE keyword 
+	// that terminated it
 	
-	INTEGER expression = parseExpression(start, line);
+	if (!consume(ELSE, PC)) return;
 
-	if (expression) {
-		parseCodeBlock();
+	// Else code block detected
+	
+	if (consume(IF, PC)) {
+		parseIfBlock(PC, !expression && execute); // Recursively calls to the next else if
 	} else {
-		parseCodeBlock(false); // Do not execute code block
+		parseCodeBlock(!expression && execute);
 	}
-
-	// Check if subsequent else blocks needs to be skipped
 }
 
 void parseCodeBlock(bool execute) {
@@ -352,7 +355,6 @@ void parse(STRING line, bool execute) {
 	if (*line == '\0') return;
 	if (*line == INLINE_COMMENT) return;
 
-
 	STRING start = line;
 
 	// Determine Top-Level Command (Statement Identification)
@@ -376,9 +378,9 @@ void parse(STRING line, bool execute) {
 
 			return;
 		} else if (consume(IF, line)) {
-			parseIfBlock(line);
+			parseIfBlock(line, execute);
 			return;
-		} else if (consume(END, line)) {
+		} else if (*line == INLINE_COMMENT) {
 			return;
 		}
 
@@ -387,4 +389,3 @@ void parse(STRING line, bool execute) {
 
 	if (*line == '\0') return; // Drop lines without a useful command
 }
-

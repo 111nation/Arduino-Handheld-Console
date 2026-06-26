@@ -18,9 +18,9 @@ void initDebugHeap() {
 	}
 }
 
-void printHeap() {
+void printHeap(bool symbols) {
 	// Print heap and skip empty contents
-	cout << "Heap:\t[ ";
+	cout << "Heap:\t[";
 	
 	bool allowEllips = true;
 	for (int i = 0; i < HEAP_SIZE; i++) {
@@ -29,6 +29,11 @@ void printHeap() {
 			allowEllips = false;
 			continue;
 		} 
+
+		if (symbols) {
+			cout << "M" << i << "=";
+		}
+
 
 		cout << Heap[i] << " , ";
 		allowEllips = true;
@@ -65,7 +70,7 @@ int main() {
 	init("programs/main");
 	initDebugHeap();
 	interpret();
-	printHeap();
+	printHeap(true);
 	close();
 
 	/*

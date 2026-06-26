@@ -19,7 +19,7 @@
 
 	// Debug Functions
 	void initDebugHeap();
-	void printHeap();
+	void printHeap(bool symbols=false);
 	void debugConsume(STRING value, STRING& line, STRING& start);
 	void debugFind(STRING value, STRING& line, STRING start);
 #else

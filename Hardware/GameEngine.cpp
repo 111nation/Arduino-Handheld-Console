@@ -2,7 +2,6 @@
 
 // UNIVERSAL IMPLEMENTATION
 
-INTEGER* Heap = new INTEGER[HEAP_SIZE];
 uint8_t nestingLevel = 0; 
 
 bool consume(STRING value, STRING& line) {
@@ -383,8 +382,6 @@ void parse(STRING line, bool execute) {
 
 using namespace std;
 
-ifstream File;
-
 void interpret() {
 	// Read file and return its string data
 	string line;	
@@ -470,13 +467,11 @@ void debugFind(STRING value, STRING& line, STRING start) {
 }
 
 int main() {
-	File.open("programs/main");
-
+	init("programs/main");
 	initDebugHeap();
 	interpret();
 	printHeap();
-
-	File.close();
+	close();
 
 	/*
 	STRING line = "IF M1 != M5 UTHEN";

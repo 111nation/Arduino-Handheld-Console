@@ -21,7 +21,7 @@ CXXFLAGS = -Wall -Wextra -std=c++17
 BIN = build/main
 
 # Source Files
-SRC = GameEngine.cpp
+SRC = GameEngine.cpp Program.cpp
 
 # Object Files (Mapped to inside build directory)
 OBJ = $(addprefix build/,$(SRC:.cpp=.o))

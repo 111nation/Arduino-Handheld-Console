@@ -1,14 +1,10 @@
 #ifndef GAME_ENGINE_HPP
 #define GAME_ENGINE_HPP
 
+#include "Program.hpp"
 #include <cstdint>
 
 // DATA TYPES
-
-#define STRING const char*
-#define INTEGER short int // 16 bit integer
-#define ADDR uint8_t
-#define HEAP_SIZE 64      // 64 heap memory addresses
 
 // SYNTAX CONSTANTS
 constexpr char INLINE_COMMENT = '#';
@@ -35,8 +31,6 @@ constexpr STRING END = "END";
 // ========================
 // UNIVERSAL IMPLEMENTATION
 // ========================
-
-extern INTEGER* Heap;     // Heap memory
 
 // Helpers
 INTEGER stringToInt(STRING line);
@@ -76,23 +70,16 @@ void skipCodeBlock();
 void parseCodeBlock(bool execute=true);
 void parse(STRING line, bool execute=true); 
 
-
-#define EMULATE
-						
 /* 
  * SWITCH BETWEEN EMULATING LANGUAGE ON 
  * PERSONAL COMPUTER AND ARDUINO HARDWARE
  */
 #ifdef EMULATE 
 	#include <iostream>
-	#include <fstream>
-	#include <string>
 	
 	constexpr INTEGER NULL_INT = 1 << (sizeof(INTEGER) * 8 - 1);
 
 	using namespace std;
-
-	extern ifstream File;
 
 	void interpret();
 

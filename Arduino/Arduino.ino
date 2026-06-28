@@ -1,5 +1,3 @@
-#include "GameEngine.hpp"
-
 //#define DEBUG
 
 /* LED LIGHT PARAMETERS */
@@ -50,17 +48,14 @@ void setup() {
 Control control;
 
 void loop() {
-  /*
-
   retrieveReceiverStatus();
 
   if (receiverReady) {
+    receiverReady = false;
     retrieveControlActions(control);
     transmitSerialInformation(control);
   } else {
   }
-  */
-
 
 }
 

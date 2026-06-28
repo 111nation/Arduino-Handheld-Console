@@ -1,7 +1,7 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
-#include <cstdint>
+#include <stdint.h>
 
 #define EMULATE
 

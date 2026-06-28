@@ -22,6 +22,8 @@ INTEGER read(ADDR address) {
 	return validAddress(address) ? Heap[address] : 0;
 }
 
+#define EMULATE
+
 #ifdef EMULATE 
 	using namespace std;
 

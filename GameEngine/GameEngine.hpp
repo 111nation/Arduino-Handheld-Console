@@ -3,6 +3,7 @@
 
 #include "Program.hpp"
 #include "Parse.hpp"
+#include "Serial.hpp"
 
 /* 
  * SWITCH BETWEEN EMULATING LANGUAGE ON 

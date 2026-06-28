@@ -117,11 +117,23 @@ void debugCursor() {
 }
 
 int main() {
+	/*
 	init("programs/main");
 	initDebugHeap();
 	interpret();
 	printHeap(true);
 	close();
+	*/
+
+	if (!initPort("/dev/ttyACM1")) {
+		std::cout << "Failed to Initialize Port\n";
+		return 0;
+	}
+
+	while (true) {
+		retrieveControlActions();
+	}
+	closePort();
 
 	//debugCursor();
 

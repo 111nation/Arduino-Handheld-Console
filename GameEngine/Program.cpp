@@ -60,8 +60,7 @@ CURSOR readRegistry(ADDR address) {
 		File.open(fileName);
 		Cursor = checkpoint();
 
-		bool portOpen = initPort(port);
-		return portOpen && next(); // Load first line
+		return initPort(port) && next(); // Load first line
 	}
 
 	void update() {

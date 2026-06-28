@@ -184,8 +184,7 @@ void debugControls(const char *port) {
 }
 
 int main() {
-	/*
-	init("programs/main", "/dev/ttyACM1");
+	init("programs/main", "/dev/ttyACM0");
 	initDebugHeap();
 	initDebugRegistry();
 
@@ -195,9 +194,8 @@ int main() {
 	printHeap(true);
 
 	close();
-	*/
 
-	debugControls("/dev/ttyACM1");
+	//debugControls("/dev/ttyACM1");
 
 	//debugSerial("/dev/ttyACM1");
 

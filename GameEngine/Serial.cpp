@@ -14,6 +14,7 @@ bool initPort(const char* Port) {
 void retrieveControls() {
 	// Signal ready
 	Serial.writeString("1\n");
+	if (Serial.available() < 0) return;
 	
 	char buffer[DATA_LENGTH+1];
 	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);

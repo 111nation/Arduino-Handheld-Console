@@ -269,6 +269,14 @@ INTEGER primary(STRING& line, STRING& end) {
 		// stringToInt returns INTEGER not ADDR, ensure non truncation
 		INTEGER rawAddress = stringToInt(start, line);
 		return read(rawAddress);
+	} else if (consume(JOYSTICK_X, line)) {
+		return control.joystick.x;
+	} else if (consume(JOYSTICK_Y, line)) {
+		return control.joystick.y;
+	} else if (consume(JOYSTICK_BUTTON, line)) {
+		return control.joystick.clicked ? 1 : 0;
+	} else if (consume(BUTTON_A, line)) {
+		return control.buttonA ? 1 : 0;
 	}
 
 	return 0; // Saftey fallback

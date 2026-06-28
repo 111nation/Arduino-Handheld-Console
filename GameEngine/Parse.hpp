@@ -33,6 +33,12 @@ constexpr STRING DEFINE = "DEFINE";
 constexpr STRING FUNC = "FUNC";
 constexpr STRING BEGIN = "BEGIN";
 
+// Control Keywords
+constexpr STRING JOYSTICK_X = "JOY_X";
+constexpr STRING JOYSTICK_Y = "JOY_Y";
+constexpr STRING JOYSTICK_BUTTON = "JOY_BTN";
+constexpr STRING BUTTON_A = "BTN_A";
+
 // Parsing and Interpreting
 extern uint8_t NestingLevel; // Track the level of nesting
 extern uint8_t RecursionDepth;

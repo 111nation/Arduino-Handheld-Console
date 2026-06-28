@@ -16,12 +16,14 @@
 #endif
 
 #define STRING const char*
-#define INTEGER short int // 16 bit integer
+#define INTEGER short int	// 16 bit integer
 #define ADDR uint8_t
-#define HEAP_SIZE 64      // 64 heap memory addresses
+#define HEAP_SIZE 64      	// 64 heap memory addresses
+#define REGISTRY_SIZE 16  	// 16 Functions Possible
 
-extern INTEGER* Heap;     	// Heap memory
+extern INTEGER* Heap;     	// Heap Memory
 extern STRING PC;			// Program Counter
+extern CURSOR* Registry;	// Fuction Registry
 
 
 bool init(STRING fileName);
@@ -32,9 +34,13 @@ void close();
 
 // Memory
 bool validAddress(INTEGER address); 
-
-// Basic I/O
 void write(ADDR address, INTEGER value);
 INTEGER read(ADDR address);
+
+// Registy
+bool validRegistry(INTEGER address);
+void writeRegistry(ADDR address, CURSOR cursor);
+CURSOR readRegistry(ADDR address);
+
 
 #endif

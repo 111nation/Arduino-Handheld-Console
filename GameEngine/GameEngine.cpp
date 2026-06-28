@@ -21,7 +21,7 @@ void initDebugHeap() {
 
 void printHeap(bool symbols) {
 	// Print heap and skip empty contents
-	cout << "Heap:\t[ ";
+	cout << "Heap:\t\t[ ";
 	
 	bool allowEllips = true;
 	for (int i = 0; i < HEAP_SIZE; i++) {
@@ -41,6 +41,33 @@ void printHeap(bool symbols) {
 	}
 
 	cout << "\b\b]\n";
+}
+
+void initDebugRegistry() {
+	// Set all registry values to "null" 
+	for (int i = 0; i < REGISTRY_SIZE; i++) {
+		Registry[i] = NULL_CURSOR;
+	}
+}
+
+void printRegistry() {
+	// Print heap and skip empty contents
+	cout << "Registry:\t[ ";
+	
+	bool allowEllips = true;
+	for (int i = 0; i < REGISTRY_SIZE; i++) {
+		if (Registry[i] <= NULL_CURSOR) {
+			if (allowEllips) cout << "... , ";
+			allowEllips = false;
+			continue;
+		} 
+
+		cout << "FUNC" << i <<  " , ";
+		allowEllips = true;
+	}
+
+	cout << "\b\b]\n";
+
 }
 
 void debugConsume(STRING value, STRING& line) {
@@ -116,26 +143,29 @@ void debugCursor() {
 	close();
 }
 
-int main() {
-	/*
-	init("programs/main");
-	initDebugHeap();
-	interpret();
-	printHeap(true);
-	close();
-	*/
-
+void debugSerial() {
 	if (!initPort("/dev/ttyACM1")) {
 		std::cout << "Failed to Initialize Port\n";
-		return 0;
+		return;
 	}
 
 	while (true) {
 		retrieveControlActions();
 	}
 	closePort();
+}
 
-	//debugCursor();
+int main() {
+	init("programs/main");
+	initDebugHeap();
+	initDebugRegistry();
+
+	interpret();
+
+	printRegistry();
+	printHeap(true);
+
+	close();
 
 	return 0;
 }

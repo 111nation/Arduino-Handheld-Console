@@ -9,11 +9,12 @@ bool isWhiteSpace(const char& value) {
 		|| value == '\r' || value == '\v' || value =='\f';
 }
 
-bool consume(STRING value, STRING& line) {
+bool consume(STRING value, STRING& line, bool whitespace) {
 	// Move pointer past IMMEDIATE matched word
 	// Used for searching keyword like 'if' or 'else'
 	// Do not move pointer if match not found
 	// Only match immediate characters
+	// Word must be padded by whitespace if whitespace == true
 	STRING currentLine = trimLeft(line);
 	STRING currentVal = value;
 	
@@ -30,7 +31,7 @@ bool consume(STRING value, STRING& line) {
 	// Ensure that matched word is padded by whitespace
 	// Prevents 'if' being matched in 'ifelse'
 	// 'if' is only found if its 'if else'
-	if (*(currentLine) == '\0' || isWhiteSpace(*(currentLine))) {
+	if (!whitespace || *currentLine == '\0' || isWhiteSpace(*currentLine)) {
 		line = trimLeft(currentLine);
 		return true;
 	}
@@ -387,6 +388,81 @@ void parseCodeBlock(bool execute) {
 	--NestingLevel;
 }
 
+void parseFuncDef(bool execute) {
+	// Add Function to Registry by
+	// Storing the current line cursor 
+	// So we can jump back to function
+	if (!execute) {
+		parseCodeBlock(false);
+		return;
+	}
+
+	if (!consume(FUNC, PC, false)) {
+		// Syntax Error: Expected Function Name
+		return;
+	}
+
+	STRING start = PC;
+
+	while (*PC >= '0' && *PC <= '9') ++PC;
+	INTEGER regAddress = stringToInt(start, PC);
+
+
+	if (!consume(BEGIN, PC)) {
+		// Syntax Error: Expected 'BEGIN'
+		return;
+	}
+
+
+
+	writeRegistry(regAddress, checkpoint());
+	parseCodeBlock(false); // Skip function body for defenitions
+}
+
+bool parseFuncArgs(bool execute) {
+	// Placeholder arguments parsing for adding 
+	// Argument parsing abilities in the future
+	// Currently ignores arguments and simply looks for closing paranthesis 
+
+	// Return true if syntactically correct argument list
+	if (!execute) return true;
+	return *PC == RIGHT_BRACKET;
+}
+
+void parseFuncCall(bool execute) {
+	// Parse function call and execute function body
+	if (!execute) return;
+
+	if (!consume(FUNC, PC, false)) {
+		// Syntax Error: Expected Function Name
+		return;
+	}
+
+	STRING start = PC;
+
+	while (*PC >= '0' && *PC <= '9') ++PC;
+	INTEGER regAddress = stringToInt(start, PC);
+
+	// Parsing Arguments
+	if (*PC == LEFT_BRACKET) {
+		if (!parseFuncArgs(execute)) {
+			// Syntax Error: Invalid Argument List
+			return;
+		}
+	}
+
+	CURSOR curLine = checkpoint();
+	
+	// Jump to function
+	jump(readRegistry(regAddress));
+	
+	parseCodeBlock(execute);
+
+	// Jump back to current line
+	jump(curLine);
+}
+
+
 void parse(bool execute) {
 	// Parse a single line
 	
@@ -401,6 +477,8 @@ void parse(bool execute) {
 
 	// Determine Top-Level Command (Statement Identification)
 	while (*PC != '\0') { 
+		if (*PC == INLINE_COMMENT) return;
+
 		bool assignment = *PC == EQUAL && *(PC-1) != EQUAL;
 		if (execute && assignment) {
 			++PC;
@@ -425,7 +503,11 @@ void parse(bool execute) {
 		} else if (consume(WHILE, PC)) {
 			parseWhileBlock(execute);
 			return;
-		} else if (*PC == INLINE_COMMENT) {
+		} else if (consume(DEFINE, PC)) {
+			parseFuncDef(execute);
+			return;
+		} else if (consume(CALL, PC)) {
+			parseFuncCall(execute);
 			return;
 		}
 

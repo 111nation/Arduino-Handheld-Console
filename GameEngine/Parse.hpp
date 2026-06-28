@@ -27,6 +27,10 @@ constexpr STRING WHILE = "WHILE";
 constexpr STRING DO = "DO";
 constexpr STRING ELSE = "ELSE";
 constexpr STRING END = "END";
+constexpr STRING CALL = "CALL";
+constexpr STRING DEFINE = "DEFINE";
+constexpr STRING FUNC = "FUNC";
+constexpr STRING BEGIN = "BEGIN";
 
 // Parsing and Interpreting
 extern uint8_t NestingLevel; // Track the level of nesting
@@ -37,7 +41,7 @@ INTEGER stringToInt(STRING line, STRING end);
 STRING trimLeft(STRING value);
 STRING findEnd(STRING line);
 bool isWhiteSpace(const char& value);
-bool consume(STRING value, STRING& line);
+bool consume(STRING value, STRING& line, bool whitespace=true);
 bool find(STRING value, STRING& line, STRING start);
 
 // Expression Parsing
@@ -54,12 +58,18 @@ INTEGER term(STRING& line, STRING& end);
 INTEGER factor(STRING& line, STRING& end);
 INTEGER unary(STRING& line, STRING& end);
 INTEGER primary(STRING& line, STRING& end);
-
 INTEGER parseExpression(STRING& line, STRING& end);
 INTEGER parseExpression(STRING& line);
+
 void parseCodeBlock(bool execute=true);
 void parseIfBlock(bool execute=true);
 void parseWhileBlock(bool execute=true);
+
+// Function Parsing
+void parseFuncDef(bool execute=true);
+bool parseFuncArgs(bool execute=true);
+void parseFuncCall(bool execute=true);
+
 void parse(bool execute=true); 
 
 #endif

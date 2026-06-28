@@ -2,6 +2,7 @@
 #define PARSE_H
 
 #include "Program.hpp"
+#include <cstdint>
 
 // DATA TYPES
 // SYNTAX CONSTANTS
@@ -34,6 +35,8 @@ constexpr STRING BEGIN = "BEGIN";
 
 // Parsing and Interpreting
 extern uint8_t NestingLevel; // Track the level of nesting
+extern uint8_t RecursionDepth;
+constexpr INTEGER MAX_RECURSION_DEPTH = 10;
 
 // HELPERS
 INTEGER stringToInt(STRING line);

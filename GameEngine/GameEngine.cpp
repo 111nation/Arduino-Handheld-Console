@@ -1,5 +1,6 @@
 #include "GameEngine.hpp"
 #include "Program.hpp"
+#include "Serial.hpp"
 
 #ifdef EMULATE 
 
@@ -124,7 +125,7 @@ void debugJump(CURSOR location) {
 }
 
 void debugCursor() {
-	init("programs/main");
+	init("programs/main", "/dev/ttyACM1");
 	debugPrintPC();
 	next();
 	debugPrintPC();
@@ -143,20 +144,48 @@ void debugCursor() {
 	close();
 }
 
-void debugSerial() {
-	if (!initPort("/dev/ttyACM1")) {
+void debugSerial(STRING port) {
+	if (!initPort(port)) {
 		std::cout << "Failed to Initialize Port\n";
 		return;
 	}
 
-	while (true) {
-		retrieveControlActions();
+	std::cout << "debugSerial not in use\n";
+
+	closePort();
+}
+
+void printControls() {
+	Joystick& joystick = control.joystick;
+	std::cout << "X: " << (int) joystick.x << "\n";
+	std::cout << "Y: " << (int) joystick.y << "\n";
+
+	if (joystick.clicked) {
+		std::cout << "Joystick Clicked!\n";
 	}
+
+	if (control.buttonA) {
+		std::cout << "Button A Clicked!\n";
+	}
+}
+
+void debugControls(const char *port) {
+	if (!initPort(port)) {
+		std::cout << "Failed to Initialize Port\n";
+		return;
+	}
+	
+	while (true) {
+		retrieveControls();
+		printControls();
+	}
+
 	closePort();
 }
 
 int main() {
-	init("programs/main");
+	/*
+	init("programs/main", "/dev/ttyACM1");
 	initDebugHeap();
 	initDebugRegistry();
 
@@ -166,6 +195,11 @@ int main() {
 	printHeap(true);
 
 	close();
+	*/
+
+	debugControls("/dev/ttyACM1");
+
+	//debugSerial("/dev/ttyACM1");
 
 	return 0;
 }

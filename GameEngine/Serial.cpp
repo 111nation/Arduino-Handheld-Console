@@ -1,4 +1,7 @@
 #include "Serial.hpp"
+#include "Control.hpp"
+
+using namespace std;
 
 serialib Serial;
 
@@ -8,19 +11,26 @@ bool initPort(const char* Port) {
 	return true;
 }
 
-void retrieveControlActions() {
+void retrieveControls() {
 	// Signal ready
 	Serial.writeString("1\n");
 	
-	unsigned char received[DATA_LENGTH];
-	if (Serial.available() < 0) return;
-	Serial.readBytes(received,  DATA_LENGTH+1, 200);
+	char buffer[DATA_LENGTH+1];
+	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);
+	
+	// Read control data
+	Joystick& joystick = control.joystick;
 
-	for (int i = 0; i < 19; i++) {
-		std::cout << received[i];
-	}
+	string sInput = buffer;
+	string x = sInput.substr(0, 8);
+	string y = sInput.substr(8, 8);
+	bool joyClicked = sInput[16] == '1';
+	bool buttonA = sInput[17] == '1';
 
-	std::cout << "\n";
+	joystick.x = stoi(x, nullptr, 2);
+	joystick.y = stoi(y, nullptr, 2);
+	joystick.clicked = joyClicked;
+	control.buttonA = buttonA;
 }
 
 void closePort() {

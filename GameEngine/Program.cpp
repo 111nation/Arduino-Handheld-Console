@@ -3,6 +3,7 @@
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 STRING PC;			
 CURSOR* Registry = new CURSOR[REGISTRY_SIZE];
+Control control;
 
 // ========= HEAP ==========
 bool validAddress(INTEGER address) {
@@ -54,11 +55,17 @@ CURSOR readRegistry(ADDR address) {
 	ifstream File;
 	streampos Cursor;
 
-	bool init(STRING fileName) {
+	bool init(STRING fileName, STRING port) {
 		if (File.is_open()) File.close();
 		File.open(fileName);
 		Cursor = checkpoint();
-		return next(); // Load first line
+
+		bool portOpen = initPort(port);
+		return portOpen && next(); // Load first line
+	}
+
+	void update() {
+		// Retrieve User controls and update data
 	}
 
 	bool next() {

@@ -32,7 +32,10 @@
 	void debugPrintPC();
 	CURSOR debugCheckpoint();
 	void debugJump(CURSOR location);
-	void debugSerial();
+
+	void debugSerial(STRING port);
+	void debugControls(STRING port);
+	void printControls();
 #else
 
 #endif 

@@ -2,6 +2,7 @@
 #include "Program.hpp"
 
 uint8_t NestingLevel = 0; 
+uint8_t RecursionDepth = 0;
 
 // ============ HELPERS ==============
 bool isWhiteSpace(const char& value) {
@@ -433,6 +434,15 @@ void parseFuncCall(bool execute) {
 	// Parse function call and execute function body
 	if (!execute) return;
 
+	// Protect from Stack OverFlow Errors
+	// Due to Infinite Recursion
+	++RecursionDepth;
+	if (RecursionDepth > MAX_RECURSION_DEPTH) {
+		// Runtime Error: Maximum Recursion Met
+		--RecursionDepth;
+		return; 
+	}
+
 	if (!consume(FUNC, PC, false)) {
 		// Syntax Error: Expected Function Name
 		return;
@@ -460,6 +470,8 @@ void parseFuncCall(bool execute) {
 
 	// Jump back to current line
 	jump(curLine);
+
+	--RecursionDepth;
 }
 
 

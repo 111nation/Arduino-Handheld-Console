@@ -1,7 +1,9 @@
 #ifndef PROGRAM_HPP
 #define PROGRAM_HPP
 
-#include <stdint.h>
+#include <cstdint>
+#include "Serial.hpp"
+#include "Control.hpp"
 
 #define EMULATE
 
@@ -15,6 +17,8 @@
 
 #endif
 
+//======= DATA ======
+
 #define STRING const char*
 #define INTEGER short int	// 16 bit integer
 #define ADDR uint8_t
@@ -25,8 +29,8 @@ extern INTEGER* Heap;     	// Heap Memory
 extern STRING PC;			// Program Counter
 extern CURSOR* Registry;	// Fuction Registry
 
-
-bool init(STRING fileName);
+//======= FUNCTIONS ======
+void update();
 bool next();
 CURSOR checkpoint();
 bool jump(CURSOR location);
@@ -41,6 +45,12 @@ INTEGER read(ADDR address);
 bool validRegistry(INTEGER address);
 void writeRegistry(ADDR address, CURSOR cursor);
 CURSOR readRegistry(ADDR address);
+
+#ifdef EMULATE
+	bool init(STRING fileName, STRING port);
+#else
+	bool init(STRING fileName);
+#endif
 
 
 #endif

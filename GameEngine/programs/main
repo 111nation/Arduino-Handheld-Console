@@ -1,8 +1,13 @@
-M0 = -5
+M8 = 5
 
-DEFINE FUNC0 BEGIN
-	M0 = -M0
+IF M8 < 13 THEN
+	M0 = 0
+ELSE
+	IF M8 >= 18 THEN
+		M0 = 2
+	ELSE
+		M0 = 1
+	END
 END
 
-CALL FUNC0
 

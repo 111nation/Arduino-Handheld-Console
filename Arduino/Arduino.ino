@@ -86,7 +86,7 @@ void retrieveReceiverStatus() {
     changeLED(LED_CONNECTED);
   } else {
     receiverReady = false;
-    changeLED(LED_DISCONNECTED);
+    //changeLED(LED_DISCONNECTED);
   }
 }
 

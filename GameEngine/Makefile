@@ -3,11 +3,10 @@ ifeq ($(OS),Windows_NT)
     # Windows Settings
     RM = del /Q /F
     FIX_PATH = $(subst /,\,$1)
-    # Changed to create the full directory tree if it doesn't exist
     MKDIR = if not exist $(dir $1) mkdir $(subst /,\,$(dir $1))
 else
     # Linux and macOS Settings
-    RM = rm -f
+    RM = rm -rf
     FIX_PATH = $1
     MKDIR = mkdir -p $(dir $1)
 endif
@@ -21,18 +20,17 @@ CXXFLAGS = -Wall -Wextra -std=c++17
 # Target Binary (Inside build directory)
 BIN = build/main
 
-# Source Files (Added Lib/seriallib.cpp)
-SRC = GameEngine.cpp Program.cpp Parse.cpp Lib/serialib.cpp Serial.cpp
+# All .cpp files in the root and Lib/ directory
+SRC = $(wildcard *.cpp) $(wildcard Lib/*.cpp)
 
-# Object Files (Mapped to inside build directory)
-OBJ = $(addprefix build/,$(SRC:.cpp=.o))
+# Map source paths to the build directory safely
+OBJ = $(patsubst %.cpp, build/%.o, $(SRC))
 
 # Build and Run the Executable
 all: $(BIN)
 	@./$(BIN)
 
 # Rule to compile .cpp files into .o files
-# Dynamic MKDIR ensures build/Lib/ is created alongside build/
 build/%.o: %.cpp
 	@$(call MKDIR,$@)
 	@$(CXX) $(CXXFLAGS) -c $< -o $@

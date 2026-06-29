@@ -1,1 +1,8 @@
-M0 = JOY_X
+M0 = -5
+
+DEFINE FUNC0 BEGIN
+	M0 = -M0
+END
+
+CALL FUNC0
+

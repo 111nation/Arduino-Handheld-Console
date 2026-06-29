@@ -1,25 +1,31 @@
 #include "Serial.hpp"
-#include "Control.hpp"
+
+#ifdef EMULATE
 
 using namespace std;
 
 serialib Serial;
+bool portReady = false;
 
-bool initPort(const char* Port) {
-	if (Serial.openDevice(Port, 9600) != 1) return false;
+bool initPort(STRING port) {
+	if (Serial.openDevice(port, 9600) != 1) return false;
 	Serial.flushReceiver();
+	portReady = true;
 	return true;
 }
 
 void retrieveControls() {
-	// Signal ready
+	if (!portReady) {
+		return;
+	}
+
+	// Signal ready to make Arduino respond back
 	Serial.writeString("1\n");
-	if (Serial.available() < 0) return;
+	if (Serial.available() < DATA_LENGTH+1) return;
 	
 	char buffer[DATA_LENGTH+1];
 	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);
 	
-	// Read control data
 	Joystick& joystick = control.joystick;
 
 	string sInput = buffer;
@@ -35,6 +41,10 @@ void retrieveControls() {
 }
 
 void closePort() {
+	if (!portReady) return;
 	Serial.writeString("0\n");
 	Serial.closeDevice();
+	portReady = false;
 }
+
+#endif

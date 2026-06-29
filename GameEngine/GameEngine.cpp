@@ -1,4 +1,6 @@
 #include "GameEngine.hpp"
+#include "Debug.hpp"
+#include "Serial.hpp"
 
 void interpret() {
 	do {
@@ -18,9 +20,6 @@ void interpret() {
 		printHeap(true);
 
 		close();
-
-		//debugControls("/dev/ttyACM1");
-		//debugSerial("/dev/ttyACM1");
 
 		return 0;
 	}

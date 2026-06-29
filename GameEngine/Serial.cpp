@@ -21,11 +21,11 @@ void retrieveControls() {
 
 	// Signal ready to make Arduino respond back
 	Serial.writeString("1\n");
-	if (Serial.available() < DATA_LENGTH+1) return;
+	if (Serial.available() < 0) return;
 	
 	char buffer[DATA_LENGTH+1];
 	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);
-	
+
 	Joystick& joystick = control.joystick;
 
 	string sInput = buffer;

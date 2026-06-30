@@ -39,3 +39,8 @@ target_link_libraries(main
 		serialib
 )
 
+add_custom_target(run ALL 
+	COMMAND ${CMAKE_BINARY_DIR}/main
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    DEPENDS main
+)

@@ -484,6 +484,7 @@ void parseFuncCall(bool execute) {
 
 
 void parse(bool execute) {
+	if (PC == NULL) return;
 	// Parse a single line
 	
 	// Skip leading whitespace

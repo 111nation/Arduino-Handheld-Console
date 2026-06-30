@@ -1,4 +1,5 @@
 #include "Program.hpp"
+#include <fstream>
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 STRING PC = NULL;			
@@ -43,8 +44,13 @@ CURSOR readRegistry(INTEGER address) {
 	bool init(STRING fileName, STRING port) {
 		if (File.is_open()) File.close();
 
-		File.open(fileName);
-		Cursor = checkpoint();
+		File.open(fileName, ifstream::in);
+
+		if (!File.is_open()) {
+			std::cout << "Failed to open " << fileName << "\n";
+		}
+
+		Cursor = File.tellg();
 
 		return initPort(port) && next();
 	}
@@ -53,8 +59,10 @@ CURSOR readRegistry(INTEGER address) {
 	}
 
 	bool next() {
+		if (!File.is_open()) return false;
 		Cursor = File.tellg();
-		if (File.is_open() && getline(File, sPC)) {
+
+		if (getline(File, sPC)) {
 			PC = sPC.c_str();
 			return true;
 		}

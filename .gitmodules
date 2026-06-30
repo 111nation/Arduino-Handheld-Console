@@ -1,0 +1,6 @@
+[submodule "GameEngine/Lib/SDL"]
+	path = GameEngine/Lib/SDL
+	url = https://github.com/libsdl-org/SDL.git
+[submodule "GameEngine/Lib/serialib"]
+	path = GameEngine/Lib/serialib
+	url = https://github.com/imabot2/serialib.git

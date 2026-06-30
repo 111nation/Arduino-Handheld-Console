@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.23)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 project(GameEngine)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+add_subdirectory(Lib/SDL EXCLUDE_FROM_ALL)
 
 add_executable(main)
 add_library(serialib)
 
 target_sources(serialib
 	PRIVATE
-	Lib/serialib.cpp
+	Lib/serialib/lib/serialib.cpp
 
 	PUBLIC
 	FILE_SET serialib
@@ -16,7 +20,7 @@ target_sources(serialib
 	BASE_DIRS
 		Lib
 	FILES
-		Lib/serialib.h
+		Lib/serialib/lib/serialib.h
 )
 
 target_sources(main
@@ -37,6 +41,7 @@ target_sources(main
 target_link_libraries(main
 	PRIVATE
 		serialib
+		SDL3::SDL3
 )
 
 add_custom_target(run ALL 

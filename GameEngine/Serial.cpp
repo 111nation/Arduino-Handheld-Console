@@ -1,4 +1,5 @@
 #include "Serial.hpp"
+#include "Types.hpp"
 
 #ifdef EMULATE
 
@@ -14,7 +15,7 @@ bool initPort(STRING port) {
 	return true;
 }
 
-void retrieveControls() {
+void retrieveControlsFromSerial() {
 	if (!portReady) {
 		return;
 	}

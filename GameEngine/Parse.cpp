@@ -1,5 +1,8 @@
 #include "Parse.hpp"
+#include "Display.hpp"
 #include "Program.hpp"
+#include "Types.hpp"
+#include <execution>
 
 uint8_t NestingLevel = 0; 
 uint8_t RecursionDepth = 0;
@@ -213,9 +216,8 @@ INTEGER unary(STRING& line, STRING& end) {
 	line = trimLeft(line);
 	if (line >= end) return 0;
 
-	// Unary '!'
-	if (*line == BANG) {
-		++line;
+	// Unary 'NOT'
+	if (consume(NOT, line)) {
 		return (unary(line, end) == 0 ? 1 : 0); 
 	}
 
@@ -340,7 +342,6 @@ void parseWhileBlock(bool execute) {
 	// Assumes the WHILE keyword was consumed Prior
 	// Grabs expression and determines to run specific WHILE block
 	// WHILE statement
-	
 	STRING start = PC;
 	CURSOR curStart = checkpoint();
 
@@ -352,7 +353,7 @@ void parseWhileBlock(bool execute) {
 	INTEGER expression = execute ? parseExpression(start, PC) : 0;
 
 	if (execute && expression) {
-		while (expression) {
+		while (isRunning && expression) {
 			parseCodeBlock();
 
 			// Move cursor back to While loop
@@ -401,6 +402,7 @@ void parseFuncDef(bool execute) {
 	// Add Function to Registry by
 	// Storing the current line cursor 
 	// So we can jump back to function
+
 	if (!execute) {
 		parseCodeBlock(false);
 		return;
@@ -428,63 +430,94 @@ void parseFuncDef(bool execute) {
 	parseCodeBlock(false); // Skip function body for defenitions
 }
 
-bool parseFuncArgs(bool execute) {
-	// Placeholder arguments parsing for adding 
-	// Argument parsing abilities in the future
-	// Currently ignores arguments and simply looks for closing paranthesis 
+void parseFuncArgs(int expectedArgs, bool execute) {
+	// Go through all the argument list and overwrite
+	// argument list structure with the arguments
+	// Expects expressions delimited by ARG_DELIM
+	if (!execute) return;
 
-	// Return true if syntactically correct argument list
-	if (!execute) return true;
-	return *PC == RIGHT_BRACKET;
+	int arg = -1; // Argument count
+	STRING start = PC;
+	while (*PC != '\0') {
+		++PC;
+
+		if (!(*PC == ARG_DELIM || *PC == '\0')) continue;
+
+		// If we hit the delimeter
+		// Parse the argument and move to the next argument
+
+		++arg;
+		if (arg >= MAX_ARGUMENTS) {
+			// Syntax Error: Max arguments reached
+			return;
+		} 
+
+		if (arg >= expectedArgs) {
+			// Syntax Error: More arguments supplied than expected
+			// Ignore other arguments and skip
+			return;
+		}
+
+		ArgumentList[arg] = parseExpression(start, PC);
+	
+		if (*PC == '\0') return; // No more arguments
+
+		++PC;
+		start = PC;
+	}
+
+	return;
 }
 
 void parseFuncCall(bool execute) {
 	// Parse function call and execute function body
 	if (!execute) return;
 
-	// Protect from Stack OverFlow Errors
-	// Due to Infinite Recursion
-	++RecursionDepth;
-	if (RecursionDepth > MAX_RECURSION_DEPTH) {
-		// Runtime Error: Maximum Recursion Met
-		--RecursionDepth;
-		return; 
-	}
-
-	if (!consume(FUNC, PC, false)) {
-		// Syntax Error: Expected Function Name
-		return;
-	}
-
-	STRING start = PC;
-
-	while (*PC >= '0' && *PC <= '9') ++PC;
-	INTEGER regAddress = stringToInt(start, PC);
-
-	// Parsing Arguments
-	if (*PC == LEFT_BRACKET) {
-		if (!parseFuncArgs(execute)) {
-			// Syntax Error: Invalid Argument List
-			return;
+	if (consume(FUNC, PC, false)) {
+		// Protect from Stack OverFlow Errors
+		// Due to Infinite Recursion
+		++RecursionDepth;
+		if (RecursionDepth > MAX_RECURSION_DEPTH) {
+			// Runtime Error: Maximum Recursion Met
+			--RecursionDepth;
+			return; 
 		}
-	}
 
-	CURSOR curLine = checkpoint();
-	
-	// Jump to function
-	jump(readRegistry(regAddress));
-	
-	parseCodeBlock(execute);
+		// Run Custom Function
+		STRING start = PC;
 
-	// Jump back to current line
-	jump(curLine);
+		while (*PC >= '0' && *PC <= '9') ++PC;
+		INTEGER regAddress = stringToInt(start, PC);
 
-	--RecursionDepth;
+		CURSOR curLine = checkpoint();
+		
+		// Jump to function
+		jump(readRegistry(regAddress));
+		
+		parseCodeBlock(execute);
+
+		// Jump back to current line
+		jump(curLine);
+
+		--RecursionDepth;
+	} else if (consume(DISPLAY, PC)) {
+		// Update Screen
+		display();
+	} else if (consume(INPUT, PC)) {
+		// Update Input
+		input();
+	} else {
+		// Syntax Error: Expected Function name/ Function does not exist
+		return;
+	} 
+
 }
 
 
 void parse(bool execute) {
+	if (!isRunning) return;
 	if (PC == NULL) return;
+
 	// Parse a single line
 	
 	// Skip leading whitespace

@@ -13,7 +13,7 @@ extern serialib Serial;
 constexpr short int DATA_LENGTH = 19;
 
 bool initPort(STRING port);
-void retrieveControls();
+void retrieveControlsFromSerial();
 void closePort();
 
 #endif

@@ -1,4 +1,6 @@
 #include "Debug.hpp"
+#include "Serial.hpp"
+#include "Types.hpp"
 
 #ifdef EMULATE 
 
@@ -61,6 +63,32 @@ void printRegistry() {
 
 	cout << "\b\b]\n";
 
+}
+
+void initDebugArgumentList() {
+	// Set all heap values to "null" by setting a large negative number
+	for (int i = 0; i < MAX_ARGUMENTS; i++) {
+		ArgumentList[i] = NULL_INT;
+	}
+}
+
+void printArgumentList() {
+	// Print heap and skip empty contents
+	cout << "Arguments:\t[ ";
+	
+	bool allowEllips = true;
+	for (int i = 0; i < MAX_ARGUMENTS; i++) {
+		if (ArgumentList[i] == NULL_INT) {
+			if (allowEllips) cout << "... , ";
+			allowEllips = false;
+			continue;
+		} 
+
+		cout << ArgumentList[i] << " , ";
+		allowEllips = true;
+	}
+
+	cout << "\b\b]\n";
 }
 
 void debugConsume(STRING value, STRING& line) {
@@ -168,7 +196,7 @@ void debugControls(const char *port) {
 	}
 	
 	while (true) {
-		retrieveControls();
+		retrieveControlsFromSerial();
 		printControls();
 	}
 

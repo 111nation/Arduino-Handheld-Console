@@ -25,13 +25,15 @@ target_sources(serialib
 
 target_sources(main
 	PRIVATE
+	Display.cpp
+	Serial.cpp
 	Program.cpp
 	Parse.cpp
 	GameEngine.cpp
-	Serial.cpp
 	Debug.cpp
 
 	Types.hpp
+	Display.hpp
 	Program.hpp
 	Parse.hpp
 	Serial.hpp

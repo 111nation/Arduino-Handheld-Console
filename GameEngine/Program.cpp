@@ -1,10 +1,15 @@
 #include "Program.hpp"
+#include "Display.hpp"
+#include "Serial.hpp"
+#include "Types.hpp"
 #include <fstream>
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 STRING PC = NULL;			
 CURSOR* Registry = new CURSOR[REGISTRY_SIZE];
 Control control;
+INTEGER* ArgumentList = new INTEGER[MAX_ARGUMENTS];
+bool isRunning = false;
 
 // ========= HEAP ==========
 bool validAddress(INTEGER address) {
@@ -34,6 +39,7 @@ CURSOR readRegistry(INTEGER address) {
 	return validAddress(address) ? Registry[address] : checkpoint();
 }
 
+
 #ifdef EMULATE 
 	using namespace std;
 
@@ -52,10 +58,11 @@ CURSOR readRegistry(INTEGER address) {
 
 		Cursor = File.tellg();
 
-		return initPort(port) && next();
-	}
+		bool result = initPort(port) && initDisplay() && next();
 
-	void update() {
+		if (result) display();
+
+		return result;
 	}
 
 	bool next() {
@@ -64,7 +71,7 @@ CURSOR readRegistry(INTEGER address) {
 
 		if (getline(File, sPC)) {
 			PC = sPC.c_str();
-			return true;
+			return isRunning;
 		}
 
 		return false;
@@ -79,8 +86,20 @@ CURSOR readRegistry(INTEGER address) {
 		return next();
 	}
 
+	void display() {
+		updateSDLDisplay();
+	}
+
+	void input() {
+		handleSDLEvents();
+		retrieveControlsFromSerial();
+	}
+
 	void close() {
 		File.close();
+		closePort();
+		closeDisplay();
+		isRunning = false;
 	}
 #else
 

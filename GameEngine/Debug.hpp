@@ -19,6 +19,9 @@ void printHeap(bool symbols=false);
 void initDebugRegistry();
 void printRegistry();
 
+void initDebugArgumentList();
+void printArgumentList();
+
 void debugConsume(STRING value, STRING& line, STRING& start);
 void debugFind(STRING value, STRING& line, STRING start);
 void debugCursor();
@@ -29,7 +32,7 @@ void debugJump(CURSOR location);
 void debugSerial(STRING port);
 void debugControls(STRING port);
 void printControls();
-	
+
 #endif
 
 #endif

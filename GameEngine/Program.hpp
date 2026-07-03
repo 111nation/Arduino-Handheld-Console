@@ -2,6 +2,7 @@
 #define PROGRAM_HPP
 
 #include "Types.hpp"
+#include "Display.hpp"
 
 //======= FUNCTIONS ======
 #ifdef EMULATE
@@ -11,12 +12,14 @@
 	bool init(STRING fileName);
 #endif
 
-void update();
 bool next();
 void close();
 
 CURSOR checkpoint();
 bool jump(CURSOR location);
+
+void display(); // Update display
+void input(); // Update Input
 
 // Memory
 bool validAddress(INTEGER address); 

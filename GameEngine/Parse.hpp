@@ -8,6 +8,7 @@
 // SYNTAX CONSTANTS
 constexpr char INLINE_COMMENT = '#';
 constexpr char MEM_PREFIX = 'M';
+constexpr char ARG_DELIM = ',';
 
 // OPERATORS
 constexpr char ADDITION = '+';
@@ -20,6 +21,7 @@ constexpr char BANG = '!';
 constexpr char EQUAL = '=';
 constexpr char LEFT_BRACKET = '('; 
 constexpr char RIGHT_BRACKET = ')'; 
+constexpr STRING NOT = "NOT";
 
 // Keywords
 constexpr STRING IF = "IF";
@@ -32,6 +34,8 @@ constexpr STRING CALL = "CALL";
 constexpr STRING DEFINE = "DEFINE";
 constexpr STRING FUNC = "FUNC";
 constexpr STRING BEGIN = "BEGIN";
+constexpr STRING DISPLAY = "DISPLAY";
+constexpr STRING INPUT = "INPUT";
 
 // Control Keywords
 constexpr STRING JOYSTICK_X = "JOY_X";
@@ -76,7 +80,7 @@ void parseWhileBlock(bool execute=true);
 
 // Function Parsing
 void parseFuncDef(bool execute=true);
-bool parseFuncArgs(bool execute=true);
+void parseFuncArgs(int expectedArgs, bool execute=true);
 void parseFuncCall(bool execute=true);
 
 void parse(bool execute=true); 

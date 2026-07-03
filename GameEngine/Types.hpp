@@ -16,12 +16,15 @@
 
 #include <cstdint>
 
+extern bool isRunning;
+
 // ===== BASIC DATA STRUCTURES ======
 #define STRING const char*
 #define INTEGER short int	// 16 bit integer
 
 #define HEAP_SIZE 64      	// 64 heap memory addresses
 #define REGISTRY_SIZE 16  	// 16 Functions Possible
+#define MAX_ARGUMENTS 10
 
 struct Joystick {
 	int8_t x = 0;
@@ -35,10 +38,11 @@ struct Control {
 };
 
 // ===== CORE GLOBALS ======
-extern Control control;		// Control Structure
-extern INTEGER* Heap;     	// Heap Memory
-extern STRING PC;			// Program Counter
-extern CURSOR* Registry;	// Fuction Registry
+extern Control control;			// Control Structure
+extern INTEGER* Heap;     		// Heap Memory
+extern STRING PC;				// Program Counter
+extern CURSOR* Registry;		// Fuction Registry
+extern INTEGER* ArgumentList; 	// Argument List "Stack"
 
 #endif
 

@@ -1,23 +1,30 @@
 #include "Program.hpp"
 #include "Parse.hpp"
 #include "Debug.hpp"
+#include "Display.hpp"
+#include "Types.hpp"
 
 void interpret() {
+	if (!isRunning) return;
+
 	do {
 		parse();
-	} while (next());
+	} while (isRunning && next());
 }
 
 #ifdef EMULATE
 	int main() {
-		init("programs/main", "/dev/ttyACM0");
+		isRunning = init("programs/main", "/dev/ttyACM0");
+		
 		initDebugHeap();
 		initDebugRegistry();
+		initDebugArgumentList();
 
 		interpret();
 
 		printRegistry();
 		printHeap(true);
+		printArgumentList();
 
 		close();
 

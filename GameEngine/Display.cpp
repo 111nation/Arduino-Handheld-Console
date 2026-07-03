@@ -4,7 +4,11 @@
 #include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
 #include "Types.hpp"
-#include <cstdarg>
+
+void boundPosition(INTEGER& x, INTEGER& y) {
+	x = x > 0 ? x : 0;
+	y = y > 0 ? y : 0;
+}
 
 #ifdef EMULATE 
 
@@ -106,6 +110,9 @@ void closeDisplay() {
 // ========= DRAW FUNCTIONS ==========
 void point(POSITION(x,y), COLOR) {
 	if (!isRunning) return;
+	
+	boundPosition(x, y);
+
 	SDL_SetRenderTarget(renderer, canvas);
 	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 	SDL_RenderPoint(renderer, x, y);
@@ -120,6 +127,10 @@ void fill(COLOR) {
 
 void line(POSITION(x1, y1), POSITION(x2, y2), COLOR) {
 	if (!isRunning) return;
+
+	boundPosition(x1, y1);
+	boundPosition(x2, y2);
+	
 	SDL_SetRenderTarget(renderer, canvas);
 	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 	SDL_RenderLine(renderer, x1, y1, x2, y2);

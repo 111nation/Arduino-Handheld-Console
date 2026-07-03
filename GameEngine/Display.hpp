@@ -9,7 +9,7 @@
 #include <SDL3/SDL.h>
 #include <iostream>
 
-#define POSITION(x,y) unsigned int x, unsigned int y
+#define POSITION(x,y) INTEGER x, INTEGER y
 #define COLOR uint8_t r, uint8_t g, uint8_t b
 
 constexpr int SCREEN_WIDTH = 320;

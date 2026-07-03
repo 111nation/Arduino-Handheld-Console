@@ -1,7 +1,6 @@
 #include "Display.hpp"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_oldnames.h"
-#include "SDL3/SDL_render.h"
 #include "Types.hpp"
 #include <cstdarg>
 
@@ -75,28 +74,9 @@ void closeDisplay() {
 }
 
 // ========= DRAW FUNCTIONS ==========
-void point(POSITION(x,y), COLOR) {
+void point(int x, int y, int r, int g, int b) {
 	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
 	SDL_RenderPoint(renderer, x, y);
-}
-
-void fill(COLOR) {
-	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
-	SDL_RenderClear(renderer);
-}
-
-void line(POSITION(x1, y1), POSITION(x2, y2), COLOR) {
-	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
-	SDL_RenderLine(renderer, x1, y1, x2, y2);
-}
-
-void clear() {
-	if (!isRunning || !window || !renderer) return;
-	SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 }
 
 #endif

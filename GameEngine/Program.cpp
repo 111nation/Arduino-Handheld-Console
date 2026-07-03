@@ -38,6 +38,11 @@ CURSOR readRegistry(INTEGER address) {
 	return validAddress(address) ? Registry[address] : checkpoint();
 }
 
+// ========= ARGUMENTS ==========
+INTEGER arg(INTEGER address) {
+	if (address >= 0 && address < MAX_ARGUMENTS) return ArgumentList[address];
+	return 0;
+}
 
 #ifdef EMULATE 
 	using namespace std;

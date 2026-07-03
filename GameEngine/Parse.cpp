@@ -174,7 +174,6 @@ INTEGER comparison(STRING& line, STRING& end) {
 			++line;
 		}
 
-
 		if (*operat == LESS) {
 			if (equalOperator) {
 				result = result <= term(line, end) ? 1 : 0;

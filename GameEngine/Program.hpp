@@ -31,4 +31,7 @@ bool validRegistry(INTEGER address);
 void writeRegistry(INTEGER address, CURSOR cursor);
 CURSOR readRegistry(INTEGER address);
 
+// Argument List
+INTEGER arg(INTEGER address);
+
 #endif

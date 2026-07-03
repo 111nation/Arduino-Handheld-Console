@@ -2,7 +2,6 @@
 #include "Display.hpp"
 #include "Serial.hpp"
 #include "Types.hpp"
-#include <fstream>
 
 INTEGER* Heap = new INTEGER[HEAP_SIZE];
 STRING PC = NULL;			
@@ -58,11 +57,7 @@ CURSOR readRegistry(INTEGER address) {
 
 		Cursor = File.tellg();
 
-		bool result = initPort(port) && initDisplay() && next();
-
-		if (result) display();
-
-		return result;
+		return initPort(port) && initDisplay() && next();
 	}
 
 	bool next() {

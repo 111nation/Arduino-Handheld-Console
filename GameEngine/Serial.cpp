@@ -37,8 +37,8 @@ void retrieveControlsFromSerial() {
 
 	joystick.x = stoi(x, nullptr, 2);
 	joystick.y = stoi(y, nullptr, 2);
-	joystick.clicked = joyClicked;
-	control.buttonA = buttonA;
+	joystick.clicked = joyClicked ? 1 : 0;
+	control.buttonA = buttonA ? 1 : 0;
 }
 
 void closePort() {

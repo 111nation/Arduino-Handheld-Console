@@ -22,6 +22,8 @@ constexpr char EQUAL = '=';
 constexpr char LEFT_BRACKET = '('; 
 constexpr char RIGHT_BRACKET = ')'; 
 constexpr STRING NOT = "NOT";
+constexpr STRING AND = "AND";
+constexpr STRING OR = "OR";
 
 // Keywords
 constexpr STRING IF = "IF";
@@ -65,6 +67,8 @@ bool find(STRING value, STRING& line, STRING start);
 
 // Operator function calls defined in heirarichal order
 // Pass pointer by reference to have a global 'current' character tracker
+INTEGER logicalOr(STRING& line, STRING& end);
+INTEGER logicalAnd(STRING& line, STRING& end);
 INTEGER equality(STRING& line, STRING& end); 						
 INTEGER comparison(STRING& line, STRING& end);
 INTEGER term(STRING& line, STRING& end);

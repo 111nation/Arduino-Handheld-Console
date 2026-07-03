@@ -29,12 +29,12 @@ extern bool isRunning;
 struct Joystick {
 	int8_t x = 0;
 	int8_t y = 0;
-	bool clicked = false;
+	int8_t clicked = 0;
 };
 
 struct Control {
 	Joystick joystick;
-	bool buttonA = false;
+	int8_t buttonA = 0;
 };
 
 // ===== CORE GLOBALS ======

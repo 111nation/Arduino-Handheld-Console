@@ -116,6 +116,28 @@ STRING findEnd(STRING line) {
 }
 
 // ============ PARSING ==============
+INTEGER logicalOr(STRING& line, STRING& end) {
+	INTEGER result = logicalAnd(line, end);
+	line = trimLeft(line);
+
+	if (!consume(OR, line)) {
+		return result ? 1 : 0;
+	}
+
+	return (result || logicalOr(line, end)) ? 1 : 0;
+}
+
+INTEGER logicalAnd(STRING& line, STRING& end) {
+	INTEGER result = equality(line, end);
+	line = trimLeft(line);
+
+	if (!consume(AND, line)) {
+		return result ? 1 : 0;
+	}
+
+	return (result && logicalAnd(line, end)) ? 1 : 0;
+}
+
 INTEGER equality(STRING& line, STRING& end) {
 	INTEGER result = comparison(line, end);
 	line = trimLeft(line);
@@ -218,7 +240,7 @@ INTEGER unary(STRING& line, STRING& end) {
 
 	// Unary 'NOT'
 	if (consume(NOT, line)) {
-		return (unary(line, end) == 0 ? 1 : 0); 
+		return unary(line, end) == 0 ? 1 : 0; 
 	}
 
 	// Unary '-'
@@ -248,12 +270,18 @@ INTEGER primary(STRING& line, STRING& end) {
 		// Are treated as sperate new expressions
 		++line;
 
-		INTEGER result = equality(line, end);
-		line = trimLeft(line);
-
+		STRING start = line;
+		// Find closing bracket
 		// Silently forgive missing closing bracket
+		while (line < end && *line != RIGHT_BRACKET) ++line;
+
+		INTEGER result = parseExpression(start, line);
+		
+		// Step over bracket if it exists
+		if (line < end && *line == RIGHT_BRACKET) ++line;
+		line = trimLeft(line);
+		
 		// (3+4 will be evaluated just like (3+4)
-		if (*line == RIGHT_BRACKET) ++line;
 		return result;
 	} 
 
@@ -262,7 +290,9 @@ INTEGER primary(STRING& line, STRING& end) {
 		STRING start = line;
 		while (line < end && (*line >= '0' && * line <= '9')) ++line; 
 		return stringToInt(start, line); 
-	} else if (*line == MEM_PREFIX) {
+	} 
+
+	if (*line == MEM_PREFIX) {
 		// Heap Address referenced
 		// Return value of the memory address
 		STRING start = ++line;
@@ -271,14 +301,26 @@ INTEGER primary(STRING& line, STRING& end) {
 		// stringToInt returns INTEGER not ADDR, ensure non truncation
 		INTEGER rawAddress = stringToInt(start, line);
 		return read(rawAddress);
-	} else if (consume(JOYSTICK_X, line)) {
+	} 
+
+	// TODO: Passing in whitespace=false may produce unexpected issues
+	// Passed in whitespace=false to allow BTN_A) where BTN_A is a keyword touching 
+	// a bracket ')'
+
+	if (consume(JOYSTICK_X, line, false)) {
 		return control.joystick.x;
-	} else if (consume(JOYSTICK_Y, line)) {
+	} 
+
+	if (consume(JOYSTICK_Y, line, false)) {
 		return control.joystick.y;
-	} else if (consume(JOYSTICK_BUTTON, line)) {
-		return control.joystick.clicked ? 1 : 0;
-	} else if (consume(BUTTON_A, line)) {
-		return control.buttonA ? 1 : 0;
+	} 
+
+	if (consume(JOYSTICK_BUTTON, line, false)) {
+		return control.joystick.clicked;
+	}
+
+	if (consume(BUTTON_A, line, false)) {
+		return control.buttonA;
 	}
 
 	return 0; // Saftey fallback
@@ -291,7 +333,7 @@ INTEGER parseExpression(STRING& line, STRING& end) {
 	// Parse till the end (excluded)
 	line = trimLeft(line);
 	if (*line == '\0') return 0;
-	return equality(line, end);	
+	return logicalOr(line, end);	
 }
 
 INTEGER parseExpression(STRING& line) {
@@ -299,10 +341,8 @@ INTEGER parseExpression(STRING& line) {
 	// Heirarchial order algorithm defined by: 
 	// http://craftinginterpreters.com/parsing-expressions.html
 	// Parse till the end of the line
-	line = trimLeft(line);
-	if (*line == '\0') return 0;
 	STRING end = findEnd(line)+1; // Indicate EOL
-	return equality(line, end);	
+	return parseExpression(line, end);	
 }
 
 void parseIfBlock(bool execute) {

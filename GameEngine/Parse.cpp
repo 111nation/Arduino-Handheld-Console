@@ -2,6 +2,7 @@
 #include "Display.hpp"
 #include "Program.hpp"
 #include "Types.hpp"
+#include <cmath>
 #include <execution>
 
 uint8_t NestingLevel = 0; 
@@ -121,7 +122,7 @@ INTEGER logicalOr(STRING& line, STRING& end) {
 	line = trimLeft(line);
 
 	if (!consume(OR, line)) {
-		return result ? 1 : 0;
+		return result;
 	}
 
 	return (result || logicalOr(line, end)) ? 1 : 0;
@@ -132,7 +133,7 @@ INTEGER logicalAnd(STRING& line, STRING& end) {
 	line = trimLeft(line);
 
 	if (!consume(AND, line)) {
-		return result ? 1 : 0;
+		return result;
 	}
 
 	return (result && logicalAnd(line, end)) ? 1 : 0;
@@ -469,43 +470,35 @@ void parseFuncDef(bool execute) {
 	parseCodeBlock(false); // Skip function body for defenitions
 }
 
-void parseFuncArgs(int expectedArgs, bool execute) {
+bool parseFuncArgs(int expectedArgs, bool execute) {
 	// Go through all the argument list and overwrite
 	// argument list structure with the arguments
 	// Expects expressions delimited by ARG_DELIM
-	if (!execute) return;
+	
+	// Return true if we reached the expected amount of arguments
+	if (!execute) return false;
 
-	int arg = -1; // Argument count
+	int arg = 0; // Argument count
 	STRING start = PC;
-	while (*PC != '\0') {
-		++PC;
-
-		if (!(*PC == ARG_DELIM || *PC == '\0')) continue;
+	while (*PC != '\0' && arg < expectedArgs && arg < MAX_ARGUMENTS) {
+		// Go to the delimiter or end of line
+		while (*PC != '\0' && *PC != ARG_DELIM) {
+			++PC;
+		}
 
 		// If we hit the delimeter
 		// Parse the argument and move to the next argument
-
+		ArgumentList[arg] = parseExpression(start, PC);
 		++arg;
-		if (arg >= MAX_ARGUMENTS) {
-			// Syntax Error: Max arguments reached
-			return;
-		} 
 
-		if (arg >= expectedArgs) {
-			// Syntax Error: More arguments supplied than expected
-			// Ignore other arguments and skip
-			return;
+		if (*PC == ARG_DELIM) { 
+			++PC;
 		}
 
-		ArgumentList[arg] = parseExpression(start, PC);
-	
-		if (*PC == '\0') return; // No more arguments
-
-		++PC;
 		start = PC;
 	}
 
-	return;
+	return arg >= expectedArgs;
 }
 
 void parseFuncCall(bool execute) {
@@ -539,13 +532,39 @@ void parseFuncCall(bool execute) {
 		jump(curLine);
 
 		--RecursionDepth;
-	} else if (consume(DISPLAY, PC)) {
-		// Update Screen
+	} 
+	// UPDATE DISPLAY
+	else if (consume(DISPLAY, PC)) {
 		display();
-	} else if (consume(INPUT, PC)) {
-		// Update Input
+	} 
+	// UPDATE INPUT
+	else if (consume(INPUT, PC)) {
 		input();
-	} else {
+	} 
+	// FILL SCREEN
+	else if (consume(FILL, PC)) {
+		if (!parseFuncArgs(3)) return;
+		fill(arg(0), arg(1), arg(2));
+	} 
+	// DRAW PIXEL
+	else if (consume(POINT, PC)) {
+		if (!parseFuncArgs(5)) return;
+		point(arg(0), arg(1), 
+			arg(2), arg(3), arg(4));
+	}
+	// DRAW LINE
+	else if (consume(LINE, PC)) {
+		if (!parseFuncArgs(7)) return;
+		line(arg(0), arg(1), 
+			arg(2), arg(3), 
+			arg(4), arg(5), arg(6));
+	}
+	// CLEAR SCREEN
+	else if (consume(CLEAR, PC)) {
+		clear();
+	} 
+	// SYNTAX ERROR
+	else {
 		// Syntax Error: Expected Function name/ Function does not exist
 		return;
 	} 

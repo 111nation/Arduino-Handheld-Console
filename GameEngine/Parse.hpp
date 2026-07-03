@@ -38,12 +38,16 @@ constexpr STRING FUNC = "FUNC";
 constexpr STRING BEGIN = "BEGIN";
 constexpr STRING DISPLAY = "DISPLAY";
 constexpr STRING INPUT = "INPUT";
+constexpr STRING POINT = "POINT";
+constexpr STRING LINE = "LINE";
+constexpr STRING FILL = "FILL";
+constexpr STRING CLEAR = "CLEAR";
 
 // Control Keywords
-constexpr STRING JOYSTICK_X = "JOY_X";
-constexpr STRING JOYSTICK_Y = "JOY_Y";
-constexpr STRING JOYSTICK_BUTTON = "JOY_BTN";
-constexpr STRING BUTTON_A = "BTN_A";
+constexpr STRING JOYSTICK_X = "JOYSTICK_X";
+constexpr STRING JOYSTICK_Y = "JOYSTICK_Y";
+constexpr STRING JOYSTICK_BUTTON = "JOYSTICK_BUTTON";
+constexpr STRING BUTTON_A = "BUTTON_A";
 
 // Parsing and Interpreting
 extern uint8_t NestingLevel; // Track the level of nesting
@@ -84,7 +88,7 @@ void parseWhileBlock(bool execute=true);
 
 // Function Parsing
 void parseFuncDef(bool execute=true);
-void parseFuncArgs(int expectedArgs, bool execute=true);
+bool parseFuncArgs(int expectedArgs, bool execute=true);
 void parseFuncCall(bool execute=true);
 
 void parse(bool execute=true); 

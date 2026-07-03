@@ -1,6 +1,7 @@
 #include "Display.hpp"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_oldnames.h"
+#include "SDL3/SDL_pixels.h"
 #include "SDL3/SDL_render.h"
 #include "Types.hpp"
 #include <cstdarg>
@@ -9,6 +10,7 @@
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+SDL_Texture* canvas = NULL;
 
 bool initDisplay() {
 	if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -38,22 +40,47 @@ bool initDisplay() {
 		return false;
 	}
 
+	canvas = SDL_CreateTexture(renderer, 
+			SDL_PIXELFORMAT_RGBA8888, 
+			SDL_TEXTUREACCESS_TARGET, 
+			SCREEN_WIDTH,
+			SCREEN_HEIGHT);
+
+	if (!canvas) {
+		std::cout << "Error:\t" << SDL_GetError() << "\n";
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
+		return false;
+	}
+
 	isRunning = true;
-	point(200, 200, 
+	clear();
+	updateSDLDisplay();
 
 	return true;
 }
 
 void updateSDLDisplay() {
-	if (!isRunning || !window || !renderer) return;
+	if (!isRunning) return;
 
-	SDL_SetRenderDrawColor(renderer, 255, 0, 255, 1);
-	SDL_RenderClear(renderer);
+	// NOTE: AI Assisted Code
+	// Switch target to physical window screen buffer
+	SDL_SetRenderTarget(renderer, NULL);
+
+	// Clear screen hardware buffer to prevent artifacts/ flickering
+	SDL_RenderTexture(renderer, canvas, NULL, NULL);
+	SDL_RenderPresent(renderer);
+
+	// Copy persistent canvas texture to fill window
+	SDL_RenderTexture(renderer, canvas, NULL, NULL);
+
+	// Instruct the GPU to physically display the compiled frame
 	SDL_RenderPresent(renderer);
 }
 
 void handleSDLEvents() {
-	if (!isRunning || !window || !renderer) return;
+	if (!isRunning) return;
 
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -66,6 +93,8 @@ void handleSDLEvents() {
 }
 
 void closeDisplay() {
+	SDL_DestroyTexture(canvas);
+	canvas = NULL;
 	SDL_DestroyRenderer(renderer);
 	renderer = NULL;
 	SDL_DestroyWindow(window);
@@ -76,27 +105,31 @@ void closeDisplay() {
 
 // ========= DRAW FUNCTIONS ==========
 void point(POSITION(x,y), COLOR) {
-	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
+	if (!isRunning) return;
+	SDL_SetRenderTarget(renderer, canvas);
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 	SDL_RenderPoint(renderer, x, y);
 }
 
 void fill(COLOR) {
-	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
+	if (!isRunning) return;
+	SDL_SetRenderTarget(renderer, canvas);
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
 }
 
 void line(POSITION(x1, y1), POSITION(x2, y2), COLOR) {
-	if (!isRunning || !window || !renderer) return;
-	SDL_SetRenderDrawColor(renderer, r, g, b, 1);
+	if (!isRunning) return;
+	SDL_SetRenderTarget(renderer, canvas);
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
 	SDL_RenderLine(renderer, x1, y1, x2, y2);
 }
 
 void clear() {
-	if (!isRunning || !window || !renderer) return;
+	if (!isRunning) return;
+	SDL_SetRenderTarget(renderer, canvas);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 }
 
 #endif

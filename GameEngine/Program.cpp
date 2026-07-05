@@ -51,7 +51,7 @@ INTEGER arg(INTEGER address) {
 	ifstream File;
 	streampos Cursor;
 
-	bool init(STRING fileName, STRING port) {
+	void init(STRING fileName, STRING port) {
 		if (File.is_open()) File.close();
 
 		File.open(fileName, ifstream::in);
@@ -62,7 +62,8 @@ INTEGER arg(INTEGER address) {
 
 		Cursor = File.tellg();
 
-		return initPort(port) && initDisplay() && next();
+		initPort(port); // Connecting a serial port is optional
+		isRunning = initDisplay() && next();
 	}
 
 	bool next() {
@@ -91,8 +92,9 @@ INTEGER arg(INTEGER address) {
 	}
 
 	void input() {
-		handleSDLEvents();
-		retrieveControlsFromSerial();
+		if (!retrieveControlsFromSerial()) {
+			handleSDLEvents();
+		}
 	}
 
 	void close() {

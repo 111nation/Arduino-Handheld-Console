@@ -15,30 +15,36 @@ bool initPort(STRING port) {
 	return true;
 }
 
-void retrieveControlsFromSerial() {
+bool retrieveControlsFromSerial() {
 	if (!portReady) {
-		return;
+		return false;
 	}
 
 	// Signal ready to make Arduino respond back
 	Serial.writeString("1\n");
-	if (Serial.available() < 0) return;
+	if (Serial.available() < 0) return false;
 	
 	char buffer[DATA_LENGTH+1];
 	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);
 
 	Joystick& joystick = control.joystick;
+	
+	try {
+		string sInput = buffer;
+		string x = sInput.substr(0, 8);
+		string y = sInput.substr(8, 8);
+		bool joyClicked = sInput[16] == '1';
+		bool buttonA = sInput[17] == '1';
 
-	string sInput = buffer;
-	string x = sInput.substr(0, 8);
-	string y = sInput.substr(8, 8);
-	bool joyClicked = sInput[16] == '1';
-	bool buttonA = sInput[17] == '1';
+		joystick.x = stoi(x, nullptr, 2);
+		joystick.y = stoi(y, nullptr, 2);
+		joystick.clicked = joyClicked ? 1 : 0;
+		control.buttonA = buttonA ? 1 : 0;
+	} catch (...) {
+		return false;
+	}
 
-	joystick.x = stoi(x, nullptr, 2);
-	joystick.y = stoi(y, nullptr, 2);
-	joystick.clicked = joyClicked ? 1 : 0;
-	control.buttonA = buttonA ? 1 : 0;
+	return true;
 }
 
 void closePort() {

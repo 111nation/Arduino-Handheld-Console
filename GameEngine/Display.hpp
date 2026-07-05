@@ -11,16 +11,18 @@
 
 #define POSITION(x,y) INTEGER x, INTEGER y
 #define COLOR uint8_t r, uint8_t g, uint8_t b
+#define KEYPRESS_VELOCITY 20
 
 constexpr int SCREEN_WIDTH = 320;
 constexpr int SCREEN_HEIGHT = 240;
 
 bool initDisplay();
+void retrieveControlsFromSDL(SDL_Scancode key);
 void handleSDLEvents();
 void updateSDLDisplay();
 void closeDisplay();
 
-// Draw functions
+// Draw Functions
 void point(POSITION(x,y), COLOR);
 void fill(COLOR);
 void line(POSITION(x1, y1), POSITION(x2, y2), COLOR);

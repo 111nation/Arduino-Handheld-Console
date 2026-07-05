@@ -1,8 +1,5 @@
 #include "Display.hpp"
 #include "SDL3/SDL_events.h"
-#include "SDL3/SDL_oldnames.h"
-#include "SDL3/SDL_pixels.h"
-#include "SDL3/SDL_render.h"
 #include "Types.hpp"
 
 void boundPosition(INTEGER& x, INTEGER& y) {
@@ -17,7 +14,7 @@ SDL_Renderer* renderer = NULL;
 SDL_Texture* canvas = NULL;
 
 bool initDisplay() {
-	if (!SDL_Init(SDL_INIT_VIDEO)) {
+	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)) {
 		std::cout << "Error:\t" << SDL_GetError() << "\n";
 		return false;
 	}
@@ -93,6 +90,17 @@ void handleSDLEvents() {
 				isRunning = false;
 				break;
 		}
+
+		Joystick& joystick = control.joystick;
+		joystick.x = 0;
+		joystick.y = 0;
+		joystick.clicked = 0;
+		control.buttonA = 0;
+
+		if (event.type == SDL_EVENT_KEY_DOWN) {
+			retrieveControlsFromSDL(event.key.scancode);
+			return;
+		}
 	}
 }
 
@@ -141,6 +149,41 @@ void clear() {
 	SDL_SetRenderTarget(renderer, canvas);
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
+}
+
+
+// ========= DRAW FUNCTIONS ==========
+void retrieveControlsFromSDL(SDL_Scancode key) {
+	if (!isRunning) return;
+
+	Joystick& joystick = control.joystick;
+
+    switch (key) {
+		case SDL_SCANCODE_RIGHT:
+		case SDL_SCANCODE_D:
+			joystick.x = KEYPRESS_VELOCITY;
+			break;
+		case SDL_SCANCODE_UP:
+		case SDL_SCANCODE_W:
+			joystick.y = -KEYPRESS_VELOCITY;
+			break;
+		case SDL_SCANCODE_LEFT:
+		case SDL_SCANCODE_A:
+			joystick.x = -KEYPRESS_VELOCITY;
+			break;
+		case SDL_SCANCODE_DOWN:
+		case SDL_SCANCODE_S:
+			joystick.y = KEYPRESS_VELOCITY;
+			break;
+		case SDL_SCANCODE_P:
+			joystick.clicked = 1;
+			break;
+		case SDL_SCANCODE_O:
+			control.buttonA = 1;
+			break;
+		default:
+			break;
+    }
 }
 
 #endif

@@ -1,8 +1,6 @@
 #include "Program.hpp"
 #include "Parse.hpp"
 #include "Debug.hpp"
-#include "Display.hpp"
-#include "Types.hpp"
 
 void interpret() {
 	if (!isRunning) return;
@@ -14,7 +12,7 @@ void interpret() {
 
 #ifdef EMULATE
 	int main() {
-		isRunning = init("programs/main", "/dev/ttyACM0");
+		init("programs/main", "/dev/ttyACM0");
 		
 		initDebugHeap();
 		initDebugRegistry();

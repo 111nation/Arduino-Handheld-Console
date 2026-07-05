@@ -2,8 +2,6 @@
 #include "Display.hpp"
 #include "Program.hpp"
 #include "Types.hpp"
-#include <cmath>
-#include <execution>
 
 uint8_t NestingLevel = 0; 
 uint8_t RecursionDepth = 0;

@@ -7,9 +7,9 @@
 //======= FUNCTIONS ======
 #ifdef EMULATE
 	#include "Serial.hpp"
-	bool init(STRING fileName, STRING port);
+	void init(STRING fileName, STRING port);
 #else
-	bool init(STRING fileName);
+	void init(STRING fileName);
 #endif
 
 bool next();

@@ -91,17 +91,9 @@ void handleSDLEvents() {
 				break;
 		}
 
-		Joystick& joystick = control.joystick;
-		joystick.x = 0;
-		joystick.y = 0;
-		joystick.clicked = 0;
-		control.buttonA = 0;
-
-		if (event.type == SDL_EVENT_KEY_DOWN) {
-			retrieveControlsFromSDL(event.key.scancode);
-			return;
-		}
+		retrieveControlsFromSDL();
 	}
+
 }
 
 void closeDisplay() {
@@ -153,37 +145,44 @@ void clear() {
 
 
 // ========= DRAW FUNCTIONS ==========
-void retrieveControlsFromSDL(SDL_Scancode key) {
+void retrieveControlsFromSDL() {
 	if (!isRunning) return;
 
-	Joystick& joystick = control.joystick;
 
-    switch (key) {
-		case SDL_SCANCODE_RIGHT:
-		case SDL_SCANCODE_D:
-			joystick.x = KEYPRESS_VELOCITY;
-			break;
-		case SDL_SCANCODE_UP:
-		case SDL_SCANCODE_W:
-			joystick.y = -KEYPRESS_VELOCITY;
-			break;
-		case SDL_SCANCODE_LEFT:
-		case SDL_SCANCODE_A:
-			joystick.x = -KEYPRESS_VELOCITY;
-			break;
-		case SDL_SCANCODE_DOWN:
-		case SDL_SCANCODE_S:
-			joystick.y = KEYPRESS_VELOCITY;
-			break;
-		case SDL_SCANCODE_P:
-			joystick.clicked = 1;
-			break;
-		case SDL_SCANCODE_O:
-			control.buttonA = 1;
-			break;
-		default:
-			break;
-    }
+	Joystick& joystick = control.joystick;
+	joystick.x = 0;
+	joystick.y = 0;
+	joystick.clicked = 0;
+	control.buttonA = 0;
+
+	const bool *keys = SDL_GetKeyboardState(NULL);
+
+	// JOYSTICK MAPPING
+	if (keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])  {
+		joystick.y = -KEYPRESS_VELOCITY;
+	}
+
+	if (keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])  {
+		joystick.y = KEYPRESS_VELOCITY;
+	}
+
+	if (keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])  {
+		joystick.x = KEYPRESS_VELOCITY;
+	}
+
+	if (keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])  {
+		joystick.x = -KEYPRESS_VELOCITY;
+	}
+
+	// BUTTON MAPPING
+	if (keys[SDL_SCANCODE_O]) {
+		joystick.clicked = 1;
+	}
+	
+	if (keys[SDL_SCANCODE_P]) {
+		joystick.clicked = 0;
+	}
+
 }
 
 #endif

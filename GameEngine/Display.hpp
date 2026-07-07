@@ -17,7 +17,7 @@ constexpr int SCREEN_WIDTH = 320;
 constexpr int SCREEN_HEIGHT = 240;
 
 bool initDisplay();
-void retrieveControlsFromSDL(SDL_Scancode key);
+void retrieveControlsFromSDL();
 void handleSDLEvents();
 void updateSDLDisplay();
 void closeDisplay();

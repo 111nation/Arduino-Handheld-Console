@@ -98,7 +98,7 @@ When emulating the game engine on your personal computer, the game engine is har
 
 Depending if you downloaded a precompiled binary or built from source, `$PROGRAM_ROOT` is the unzipped folder installed the precompiled binary or `$PROGRAM_ROOT` is the `GameEngine` folder where cmake was executed.
 
-Keep all custom written games in `$PROGRAM_ROOT/program/main`, 'load' a game by renaming it to `main` in the programs folder.
+Keep all custom written games in `$PROGRAM_ROOT/program/`, 'load' a game by renaming it to `main` in the programs folder.
 
 > [!Tip]
 > Two sample games, a drawing and a pong game has been included as a demo
@@ -110,7 +110,6 @@ Keep all custom written games in `$PROGRAM_ROOT/program/main`, 'load' a game by 
 		<th width="150px">Keys</th>
 		<th width="300px">Description</th>
 	</tr>
-
 	<tr>
 		<td>
 			<kbd>w</kbd> / <kbd>a</kbd> / <kbd>s</kbd> / <kbd>d</kbd>
@@ -119,7 +118,6 @@ Keep all custom written games in `$PROGRAM_ROOT/program/main`, 'load' a game by 
 			Movement controls. emulates joystick, maps a keypress to -100%, 0% or 100% of equivalent joystick position.
 		</td>
 	</tr>
-
 	<tr>
 		<td>
 			<kbd>E</kbd>
@@ -128,7 +126,6 @@ Keep all custom written games in `$PROGRAM_ROOT/program/main`, 'load' a game by 
 			Mapping to joystick click
 		</td>
 	</tr>
-
 	<tr>
 		<td>
 			<kbd>O</kbd>
@@ -137,7 +134,6 @@ Keep all custom written games in `$PROGRAM_ROOT/program/main`, 'load' a game by 
 			Mapping to auxillary 'A' button
 		</td>
 	</tr>
-
 </table>
 
 ### Scripting Games

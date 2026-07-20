@@ -15,6 +15,7 @@ constexpr char ADDITION = '+';
 constexpr char SUBTRACTION = '-';
 constexpr char MULTIPLICATION = '*';
 constexpr char DIVISION = '/';
+constexpr char MODULUS = '%';
 constexpr char GREATER = '>';
 constexpr char LESS = '<';
 constexpr char BANG = '!';
@@ -42,6 +43,9 @@ constexpr STRING POINT = "POINT";
 constexpr STRING LINE = "LINE";
 constexpr STRING FILL = "FILL";
 constexpr STRING CLEAR = "CLEAR";
+constexpr STRING TIME = "TIME";
+constexpr STRING WIDTH = "SCREEN_WIDTH";
+constexpr STRING HEIGHT = "SCREEN_HEIGHT";
 
 // Control Keywords
 constexpr STRING JOYSTICK_X = "JOYSTICK_X";

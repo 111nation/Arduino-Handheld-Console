@@ -23,12 +23,20 @@ bool retrieveControlsFromSerial() {
 	// Signal ready to make Arduino respond back
 	Serial.writeString("1\n");
 	if (Serial.available() < 0) return false;
+
+	// TODO: FIX UP CODE!
 	
-	char buffer[DATA_LENGTH+1];
-	Serial.readBytes(buffer,  DATA_LENGTH+1, 200);
+	char buffer[DATA_LENGTH+2];
+	int bytesRead = Serial.readBytes(buffer,  DATA_LENGTH+1, 20);
+
+	if (bytesRead > 0) {
+		buffer[bytesRead] = '\0';
+	}
+
+	std::cout << "\n" << buffer << "\n";
 
 	Joystick& joystick = control.joystick;
-	
+
 	try {
 		string sInput = buffer;
 		string x = sInput.substr(0, 8);
@@ -40,6 +48,7 @@ bool retrieveControlsFromSerial() {
 		joystick.y = stoi(y, nullptr, 2);
 		joystick.clicked = joyClicked ? 1 : 0;
 		control.buttonA = buttonA ? 1 : 0;
+
 	} catch (...) {
 		return false;
 	}

@@ -91,6 +91,15 @@ INTEGER arg(INTEGER address) {
 		updateSDLDisplay();
 	}
 
+	INTEGER now() {
+		struct timespec ts;
+		timespec_get(&ts, TIME_UTC);
+		long long ms = (ts.tv_sec * 1000LL) + (ts.tv_nsec / 1000000);
+
+		const INTEGER MAX_TIME = 1ULL << ((sizeof(INTEGER) * 8 - 1));
+		return ms % MAX_TIME;
+	}
+
 	void input() {
 		if (!retrieveControlsFromSerial()) {
 			handleSDLEvents();

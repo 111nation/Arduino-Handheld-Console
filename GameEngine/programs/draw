@@ -1,0 +1,91 @@
+############################
+	Draw Game, written
+	by @111nation
+############################
+
+DEFINE FUNC0 BEGIN
+	CALL INPUT # Update Input
+	CALL DISPLAY # Update Display
+END
+
+M3 = 20 # Player size
+M4 = 1 # Player thickness
+
+# Player coordinates
+M0 = (320)/2
+M1 = (240)/2
+
+# Velocity
+M5 = 5
+
+# Stroke Width
+M6 = 2
+
+
+# DRAW PLAYER 
+DEFINE FUNC1 BEGIN
+	M60 = -M4
+	
+	WHILE M60 < M4 DO
+		CALL LINE M0-M3, M1+M60, M0+M3, M1+M60, 255, 0, 0
+		CALL LINE M0+M60, M1-M3, M0+M60, M1+M3, 255, 0, 0
+		M60 = M60 + 1
+	END
+
+END
+
+# ERASE PLAYER 
+DEFINE FUNC5 BEGIN
+	M60 = -M4
+	
+	WHILE M60 < M4 DO
+		CALL LINE M0-M3, M1+M60, M0+M3, M1+M60, 0, 0, 0
+		CALL LINE M0+M60, M1-M3, M0+M60, M1+M3, 0, 0, 0
+		M60 = M60 + 1
+	END
+
+END
+
+# UPDATE LOCATION
+DEFINE FUNC2 BEGIN
+	M0 = M0 + (M5*JOYSTICK_X)/100
+	M1 = M1 + (M5*JOYSTICK_Y)/100
+
+	IF M0 <= 0 THEN 
+		M0 = 0
+	ELSE IF M0 >= 320 THEN
+		M0 = 320-1
+	END
+
+	IF M1 <= 0 THEN 
+		M1 = 0
+	ELSE IF M1 >= 240 THEN
+		M1 = 240-1
+	END
+END
+
+# DRAW FUNCTION
+DEFINE FUNC4 BEGIN 
+	M60 = -M6
+
+	WHILE M60 < M6 DO
+		CALL POINT M0+M60, M1, 255, 255, 255
+		M60 = M60 + 1
+	END
+
+	M60 = -M6
+
+	WHILE M60 < M6 DO
+		CALL POINT M0, M1+M60, 255, 255, 255
+		M60 = M60 + 1
+	END
+END
+
+
+WHILE NOT BUTTON_A DO
+	CALL FUNC5 # Erase Player
+	CALL FUNC4 # Draw Drawing
+	CALL FUNC2 # Update Coordinates
+	CALL FUNC1 # Draw Player
+    CALL FUNC0 # Update Game Engine
+END

@@ -7,6 +7,7 @@
 //======= FUNCTIONS ======
 #ifdef EMULATE
 	#include "Serial.hpp"
+	#include <ctime>
 	void init(STRING fileName, STRING port);
 #else
 	void init(STRING fileName);
@@ -25,6 +26,7 @@ void input(); // Update Input
 bool validAddress(INTEGER address); 
 void write(INTEGER address, INTEGER value);
 INTEGER read(INTEGER address);
+INTEGER now();
 
 // Registy
 bool validRegistry(INTEGER address);

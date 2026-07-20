@@ -10,7 +10,7 @@
 struct Control;
 
 extern serialib Serial;
-constexpr short int DATA_LENGTH = 19;
+constexpr short int DATA_LENGTH = 18;
 
 bool initPort(STRING port);
 bool retrieveControlsFromSerial();

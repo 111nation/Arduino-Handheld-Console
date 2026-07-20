@@ -1,87 +1,104 @@
-DEFINE FUNC0 BEGIN
-	CALL INPUT # Update Input
-	CALL DISPLAY # Update Display
+#######################################
+	Pong game, co-authored 
+	using Gemini
+#######################################
+
+M49 = 10
+M50 = 0      # Time tracker
+# Player Data
+M0 = 320/2   # Player X
+M1 = 5		 # Velocity	
+M2 = 10      # Thickness
+M3 = 40      # Width (Half-width from center)
+
+# Ball Data
+M6 = 4		 # Ball Size
+M4 = 320/2   # Ball X Position
+M5 = 240/2   # Ball Y Position
+# Ball Direction (Multipliers: 1 or -1)
+M7 = -1      # X Direction
+M8 = 1       # Y Direction
+M9 = 1       # Ball Speed Scalar
+
+# Display Player in updated position
+DEFINE FUNC0 BEGIN 
+	M0 = M0 + (M1*JOYSTICK_X)/100
+
+	# Bound player position
+	IF M0-M3 < 0 THEN 
+		M0 = M3
+	ELSE IF M0+M3 > 319 THEN
+		M0 = 319-M3
+	END
+
+	M63 = 0
+	WHILE M63 < M2 DO 
+		CALL LINE M0-M3, (239-M63), M0+M3, (239-M63), 255, 255, 255  
+		M63 = M63 + 1
+	END
 END
 
-M3 = 20 # Player size
-M4 = 1 # Player thickness
-
-# Player coordinates
-M0 = (320)/2
-M1 = (240)/2
-
-# Velocity
-M5 = 5
-
-# Stroke Width
-M6 = 2
-
-
-# DRAW PLAYER 
+# Process Ball Physics and Display
 DEFINE FUNC1 BEGIN
-	M60 = -M4
 	
-	WHILE M60 < M4 DO
-		CALL LINE M0-M3, M1+M60, M0+M3, M1+M60, 255, 0, 0
-		CALL LINE M0+M60, M1-M3, M0+M60, M1+M3, 255, 0, 0
-		M60 = M60 + 1
+	# Calculate delta time into a temporary register
+	M51 = TIME - M50
+
+	# OVERFLOW GUARD: If delta is negative, a 32-second overflow just occurred.
+	# Adding 32768 reconstructs the correct elapsed time perfectly.
+	IF M51 < 0 THEN
+		M51 = M51 + 32768
 	END
 
-END
+	# Check the safely corrected time delta
+	IF M51 >= M49 THEN 
+		M4 = M4 + (M9 * M7)
+		M5 = M5 + (M9 * M8)
 
-# ERASE PLAYER 
-DEFINE FUNC5 BEGIN
-	M60 = -M4
-	
-	WHILE M60 < M4 DO
-		CALL LINE M0-M3, M1+M60, M0+M3, M1+M60, 0, 0, 0
-		CALL LINE M0+M60, M1-M3, M0+M60, M1+M3, 0, 0, 0
-		M60 = M60 + 1
+		# Screen boundary limits: Horizontal walls bounce
+		IF M4-M6 < 0 OR M4+M6 > 319 THEN 
+			M7 = -M7
+		END
+
+		# Screen boundary limits: Ceiling bounce
+		IF M5-M6 < 0 THEN 
+			M8 = -M8
+		END
+
+		# Check for player paddle collision (Paddle surface is at Y = 239 - M2)
+		IF M5+M6 >= 239-M2 THEN
+			# Verify ball X position is inside the paddle bounds
+			IF M4+M6 >= M0-M3 AND M4-M6 <= M0+M3 THEN
+				M8 = -1  # Force upward vertical movement
+				M5 = 239 - M2 - M6 # Snap ball position above paddle to prevent multi-hit stickiness
+			END
+		END
+
+		# Ball missed the paddle and hit bottom floor: Reset ball to center
+		IF M5+M6 > 239 THEN
+			M4 = 320/2
+			M5 = 240/2
+			M8 = -1 # Launch upwards
+		END
+
+		M50 = TIME
 	END
 
-END
-
-# UPDATE LOCATION
-DEFINE FUNC2 BEGIN
-	M0 = M0 + (M5*JOYSTICK_X)/100
-	M1 = M1 + (M5*JOYSTICK_Y)/100
-
-	IF M0 <= 0 THEN 
-		M0 = 0
-	ELSE IF M0 >= 320 THEN
-		M0 = 320-1
-	END
-
-	IF M1 <= 0 THEN 
-		M1 = 0
-	ELSE IF M1 >= 240 THEN
-		M1 = 240-1
-	END
-END
-
-# DRAW FUNCTION
-DEFINE FUNC4 BEGIN 
-	M60 = -M6
-
-	WHILE M60 < M6 DO
-		CALL POINT M0+M60, M1, 255, 255, 255
-		M60 = M60 + 1
-	END
-
-	M60 = -M6
-
-	WHILE M60 < M6 DO
-		CALL POINT M0, M1+M60, 255, 255, 255
-		M60 = M60 + 1
+	# ALWAYS draw the ball every frame
+	M63 = M5-M6
+	WHILE M63 < M5+M6 DO 
+		CALL LINE M4-M6, M63, M4+M6, M63, 255, 0, 255
+		M63 = M63 + 1
 	END
 END
 
-
+# Main Game Loop
 WHILE NOT BUTTON_A DO
+	CALL FILL 0, 0, 0
+	
+	CALL FUNC0   
+	CALL FUNC1   
 
-	CALL FUNC5 # Erase Player
-	CALL FUNC4 # Draw Drawing
-	CALL FUNC2 # Update Coordinates
-	CALL FUNC1 # Draw Player
-    CALL FUNC0 # Update Game Engine
+	CALL INPUT
+	CALL DISPLAY
 END

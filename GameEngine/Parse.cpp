@@ -213,14 +213,16 @@ INTEGER factor(STRING& line, STRING& end) {
 	INTEGER result = unary(line, end);
 	line = trimLeft(line);
 
-	while (line < end && (*line == MULTIPLICATION || *line == DIVISION)) {
+	while (line < end && (*line == MULTIPLICATION || *line == DIVISION || *line == MODULUS)) {
 		STRING operat = line;
 		++line;
 
 		if (*operat == MULTIPLICATION) {
 			result *= unary(line, end);
-		} else {
+		} else if (*operat == DIVISION) {
 			result /= unary(line, end);
+		} else {
+			result %= unary(line, end);
 		}
 
 		line = trimLeft(line);
@@ -319,6 +321,18 @@ INTEGER primary(STRING& line, STRING& end) {
 
 	if (consume(BUTTON_A, line, false)) {
 		return control.buttonA;
+	}
+
+	if (consume(WIDTH, line, false)) {
+		return SCREEN_WIDTH;
+	}
+
+	if (consume(HEIGHT, line, false)) {
+		return SCREEN_HEIGHT;
+	}
+
+	if (consume(TIME, line, false)) {
+		return now();
 	}
 
 	return 0; // Saftey fallback

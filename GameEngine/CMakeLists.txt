@@ -46,8 +46,8 @@ target_link_libraries(main
 		SDL3::SDL3
 )
 
-add_custom_target(run ALL 
-	COMMAND ${CMAKE_BINARY_DIR}/main
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    DEPENDS main
-)
+#add_custom_target(run ALL 
+#	COMMAND ${CMAKE_BINARY_DIR}/main
+#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+#    DEPENDS main
+#)

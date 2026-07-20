@@ -175,12 +175,12 @@ void retrieveControlsFromSDL() {
 	}
 
 	// BUTTON MAPPING
-	if (keys[SDL_SCANCODE_O]) {
+	if (keys[SDL_SCANCODE_E]) {
 		joystick.clicked = 1;
 	}
 	
-	if (keys[SDL_SCANCODE_P]) {
-		joystick.clicked = 0;
+	if (keys[SDL_SCANCODE_O]) {
+		control.buttonA = 1;
 	}
 
 }

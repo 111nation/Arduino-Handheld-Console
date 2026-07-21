@@ -91,6 +91,9 @@ cmake -S . -B build
 cmake --build build
 ```
 
+> [!NOTE]
+> Building commands may differ depending on your environment
+
 ## How the Game Engine Works
 
 ### Loading Games

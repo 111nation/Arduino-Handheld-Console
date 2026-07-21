@@ -12,14 +12,11 @@
 _Make sure to leave a GitHub star on this repo to show your support <3 :)_
 
 <br />
-<div center="align" width="200px">
 
-> [!NOTE]
+>[!NOTE]
 > The project is WIP!
 > You can currently emulate and run the Game Engine on your laptop/computer.
 > Future goals are to implement this on an Arduino.
-
-</div>
 
 <hr />
 

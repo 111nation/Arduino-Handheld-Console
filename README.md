@@ -75,6 +75,9 @@ Make sure you have the various prerequisites.
 
 ### Building & Executing
 
+> [!NOTE]
+> Building commands may differ depending on your environment
+
 Clone the repository onto your local system using the following.
 
 ```bash
@@ -90,9 +93,6 @@ cd GameEngine
 cmake -S . -B build
 cmake --build build
 ```
-
-> [!NOTE]
-> Building commands may differ depending on your environment
 
 ## How the Game Engine Works
 

@@ -11,11 +11,15 @@
 
 _Make sure to leave a GitHub star on this repo to show your support <3 :)_
 
-> [!Note]
+<br />
+<div center="align" width="200px">
+
+> [!NOTE]
 > The project is WIP!
 > You can currently emulate and run the Game Engine on your laptop/computer.
 > Future goals are to implement this on an Arduino.
 
+</div>
 
 <hr />
 
@@ -34,30 +38,30 @@ Install the binary releases [here](https://github.com/111nation/Arduino-Handheld
 
 <details>
   <summary>Windows</summary>
-  
-  Unzip the downloaded zipped file and run the project within the folder by double-clicking on it.
-  
-  Alternatively, you can open a terminal window **within the root of the folder** and execute the following to run via the CLI.
-  
-  ```powershell
-    .\main.exe
-  ```
-    
+
+Unzip the downloaded zipped file and run the project within the folder by double-clicking on it.
+
+Alternatively, you can open a terminal window **within the root of the folder** and execute the following to run via the CLI.
+
+```powershell
+.\main.exe
+```
+
  </details>
 
  <details>
   <summary>Linux (Unix)</summary>
   
-  Unzip the downloaded zip file by running the following in the same directory as the downloaded zip file.
-  ```bash
-    unzip <Folder Name> .
-    cd <Folder Name>
-  ```
-   To execute the binary via CLI, execute:
-  
-  ```powershell
-    ./main
-  ```
+Unzip the downloaded zip file by running the following in the same directory as the downloaded zip file.
+```bash
+unzip <Folder Name> .
+cd <Folder Name>
+```
+To execute the binary via CLI, execute:
+
+```powershell
+./main
+```
     
  </details>
  
@@ -77,17 +81,17 @@ Make sure you have the various prerequisites.
 Clone the repository onto your local system using the following.
 
 ```bash
-	git clone https://github.com/111nation/Arduino-Handheld-Console
+git clone https://github.com/111nation/Arduino-Handheld-Console
 ```
 
 Enter the cloned repository and enter the `GameEngine` directory to build and execute the Emulator.
 
 ```bash
-	cd Arduino-Handheld-Console
-	cd GameEngine
-	
-	cmake -S . -B build
-	cmake --build build
+cd Arduino-Handheld-Console
+cd GameEngine
+
+cmake -S . -B build
+cmake --build build
 ```
 
 ## How the Game Engine Works
@@ -98,9 +102,9 @@ When emulating the game engine on your personal computer, the game engine is har
 
 Depending if you downloaded a precompiled binary or built from source, `$PROGRAM_ROOT` is the unzipped folder installed the precompiled binary or `$PROGRAM_ROOT` is the `GameEngine` folder where cmake was executed.
 
-Keep all custom written games in `$PROGRAM_ROOT/program/`, 'load' a game by renaming it to `main` in the programs folder.
+Keep all custom written games in `$PROGRAM_ROOT/programs/`, 'load' a game by renaming it to `main` in the programs folder.
 
-> [!Tip]
+> [!TIP]
 > Two sample games, a drawing and a pong game has been included as a demo
 
 ### Emulator Controls
@@ -140,3 +144,31 @@ Keep all custom written games in `$PROGRAM_ROOT/program/`, 'load' a game by rena
 
 This is the most fun part! This section is viewable at [Docs/README.md](Docs/README.md)
 
+### Project Structure
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left;">Directory / Component</th>
+      <th style="text-align: left;">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>DepreciatedPyGameEngine</strong></td>
+      <td>Stores the legacy, deprecated Python-based game engine codebase.</td>
+    </tr>
+    <tr>
+      <td><strong>Arduino</strong></td>
+      <td>Stores the Arduino implementation used to control physical hardware inputs.</td>
+    </tr>
+    <tr>
+      <td><strong>GameEngine</strong></td>
+      <td>Stores the main source code and data for the active game engine.</td>
+    </tr>
+    <tr>
+      <td><strong>Docs</strong></td>
+      <td>Contains the system and API documentation for the current game engine.</td>
+    </tr>
+  </tbody>
+</table>

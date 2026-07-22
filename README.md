@@ -98,11 +98,11 @@ cmake --build build
 
 ### Loading Games
 
-When emulating the game engine on your personal computer, the game engine is hard coded to load a game from the programs folder, `$PROGRAM_ROOT/programs/main`, where `$PROGRAM_ROOT` is the current working directory the program was executed at. This currently functions as a basic bootloader for the game console to fetch the first instructions (which is just a single game at this point).
+When emulating the game engine on your personal computer, the game engine is hard coded to load a game from the programs folder, `$ROOT/programs/main`, where `$ROOT` is the current working directory the program was executed at. This currently functions as a basic bootloader for the game console to fetch the first instructions (which is just a single game at this point).
 
-Depending if you downloaded a precompiled binary or built from source, `$PROGRAM_ROOT` is the unzipped folder installed the precompiled binary or `$PROGRAM_ROOT` is the `GameEngine` folder where cmake was executed.
+Depending if you downloaded a precompiled binary or built from source, `$ROOT` is the unzipped folder installed the precompiled binary or `$ROOT` is the `GameEngine` folder where cmake was executed.
 
-Keep all custom written games in `$PROGRAM_ROOT/programs/`, 'load' a game by renaming it to `main` in the programs folder.
+Keep all custom written games in `$ROOT/programs/`, 'load' a game by renaming it to `main` in the programs folder.
 
 > [!TIP]
 > Two sample games, a drawing and a pong game has been included as a demo
@@ -116,7 +116,7 @@ Keep all custom written games in `$PROGRAM_ROOT/programs/`, 'load' a game by ren
 	</tr>
 	<tr>
 		<td>
-			<kbd>w</kbd> / <kbd>a</kbd> / <kbd>s</kbd> / <kbd>d</kbd>
+			<kbd>W</kbd> / <kbd>A</kbd> / <kbd>S</kbd> / <kbd>D</kbd>
 		</td>
 		<td>
 			Movement controls. emulates joystick, maps a keypress to -100%, 0% or 100% of equivalent joystick position.
@@ -155,7 +155,7 @@ This is the most fun part! This section is viewable at [Docs/README.md](Docs/REA
   </thead>
   <tbody>
     <tr>
-      <td><strong>DepreciatedPyGameEngine</strong></td>
+      <td><strong>Depreciated/PyGameEngine</strong></td>
       <td>Stores the legacy, deprecated Python-based game engine codebase.</td>
     </tr>
     <tr>

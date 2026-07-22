@@ -7,6 +7,8 @@
 //======= FUNCTIONS ======
 #ifdef EMULATE
 	#include "Serial.hpp"
+    #include <iostream>
+    #include <string>
 	#include <ctime>
 	void init(STRING fileName, STRING port);
 #else

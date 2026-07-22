@@ -1,9 +1,8 @@
 #include "Serial.hpp"
-#include "Types.hpp"
-
-#ifdef EMULATE
 
 using namespace std;
+
+#ifdef EMULATE
 
 serialib Serial;
 bool portReady = false;
@@ -32,8 +31,6 @@ bool retrieveControlsFromSerial() {
 	if (bytesRead > 0) {
 		buffer[bytesRead] = '\0';
 	}
-
-	std::cout << "\n" << buffer << "\n";
 
 	Joystick& joystick = control.joystick;
 

@@ -550,7 +550,7 @@ void parseFuncCall(bool execute) {
 		display();
 	} 
 	// UPDATE INPUT
-	else if (consume(INPUT, PC)) {
+	else if (consume(S_INPUT, PC)) {
 		input();
 	} 
 	// FILL SCREEN
@@ -559,13 +559,13 @@ void parseFuncCall(bool execute) {
 		fill(arg(0), arg(1), arg(2));
 	} 
 	// DRAW PIXEL
-	else if (consume(POINT, PC)) {
+	else if (consume(S_POINT, PC)) {
 		if (!parseFuncArgs(5)) return;
 		point(arg(0), arg(1), 
 			arg(2), arg(3), arg(4));
 	}
 	// DRAW LINE
-	else if (consume(LINE, PC)) {
+	else if (consume(S_LINE, PC)) {
 		if (!parseFuncArgs(7)) return;
 		line(arg(0), arg(1), 
 			arg(2), arg(3), 

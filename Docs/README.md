@@ -11,7 +11,7 @@
 
 ### Loading Games
 
-As previously discussed in the root [README.md](../README.md), the game engine is hard coded to run a single implementation of a game under `$PROGRAM_ROOT/programs/main`. This main file is due to act as a bootloader for the console in the future. Right now this is where you will write your scripts to create your fun little games!
+As previously discussed in the root [README.md](../README.md), the game engine is hard coded to run a single implementation of a game under `$ROOT/programs/main`. This main file is due to act as a bootloader for the console in the future. Right now this is where you will write your scripts to create your fun little games!
 
 ### About The Programming Language
 

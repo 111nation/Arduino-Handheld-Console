@@ -6,6 +6,7 @@
 #ifdef EMULATE
 
 #include "Lib/serialib/lib/serialib.h"
+#include <string>
 
 struct Control;
 

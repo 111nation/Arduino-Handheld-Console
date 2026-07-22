@@ -116,7 +116,7 @@ Keep all custom written games in `$ROOT/programs/`, 'load' a game by renaming it
 	</tr>
 	<tr>
 		<td>
-			<kbd>W</kbd> / <kbd>A</kbd> / <kbd>S</kbd> / <kbd>D</kbd>
+			<kbd>W</kbd> / <kbd>A</kbd> / <kbd>S</kbd> / <kbd>D</kbd> or Arrow Keys
 		</td>
 		<td>
 			Movement controls. emulates joystick, maps a keypress to -100%, 0% or 100% of equivalent joystick position.
